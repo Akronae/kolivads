@@ -1,7 +1,7 @@
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
 import 'sanitize.css/sanitize.css';
-import './locales/i18n';
+import '@/locales/i18n';
 
 import * as React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
@@ -13,6 +13,11 @@ import { configureAppStore } from '@/store/configureStore';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { KolivadsApiUrl } from '@/utils/api';
 import reportWebVitals from '@/reportWebVitals';
+import Theme from '@/styles/theme';
+
+window['modules'] = {
+  Theme,
+};
 
 const store = configureAppStore();
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
