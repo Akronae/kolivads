@@ -1,10 +1,10 @@
-import { gql, DocumentNode } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 import StringUtils from './StringUtils';
 
 export default class GqlBuilder<T extends object> {
   private fields: string[] = [];
 
-  constructor(private operation: string) {}
+  constructor(public operation: string) {}
 
   /**
    * Takes a lambda and extracts its field name.
@@ -59,7 +59,7 @@ export default class GqlBuilder<T extends object> {
       .replaceAll('{\n\n}', '');
   }
 
-  public build(): DocumentNode {
+  public build(): TypedDocumentNode<T> {
     const map = this.buildFieldMap();
 
     const query = gql`
