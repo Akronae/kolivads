@@ -1,9 +1,8 @@
 import { Service } from "typedi";
 import { ObjectId } from "mongodb";
-
-import PropertyModel from "./model";
-import { PropertyCreateInput, PropertyFilterInput } from "./input";
-import { Property } from "../../entities/Property";
+import PropertyModel from "@/modules/property/model";
+import { PropertyCreateInput, PropertyFilterInput } from "@/modules/property/input";
+import { Property } from "@/entities/Property";
 
 @Service()
 export default class PropertyService {

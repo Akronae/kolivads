@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
-    "build": "rimraf ./build && tsc",
+    "build": "rimraf ./build && tsc && tsc-alias",
     "start": "npm run build && node ./build/index.js"
   },
   "keywords": [],
@@ -33,6 +33,7 @@
     "helmet": "^3.22.0",
     "mongoose": "^5.9.13",
     "reflect-metadata": "^0.1.13",
+    "tsc-alias": "^1.6.11",
     "type-graphql": "^1.0.0-rc.1",
     "typedi": "^0.8.0"
   }

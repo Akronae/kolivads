@@ -1,7 +1,6 @@
-import { ObjectType, Field, InputType } from "type-graphql";
+import { ObjectType, Field } from "type-graphql";
 import { prop, plugin } from "@typegoose/typegoose";
-import { ObjectId } from "mongodb";
-import { Address } from "./Address";
+import { Address } from "@/entities/Address";
 import { AutoIncrementID } from '@typegoose/auto-increment'
 
 @plugin(AutoIncrementID)

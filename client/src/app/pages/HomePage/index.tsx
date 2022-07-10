@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@apollo/client';
-import GqlBuilder from 'utils/GqlBuilder';
-import { Property, PropertyOperation } from 'types/Property';
+import GqlBuilder from '@/utils/GqlBuilder';
+import { Property, PropertyOperation } from '@/types/Property';
 
 export function HomePage() {
   const { data } = useQuery<Property[]>(

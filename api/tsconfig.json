@@ -14,7 +14,13 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+        "@/*": [
+            "./src/*"
+        ]
+    }
   },
   "exclude": ["node_modules", "**/*.test.ts"],
   "include": ["./src/**/*"],

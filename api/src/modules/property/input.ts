@@ -1,6 +1,6 @@
 import { Field, InputType, ID } from "type-graphql";
 import { MaxLength, Min, MinLength } from "class-validator";
-import { Address } from "../../entities/Address";
+import { Address } from "@/entities/Address";
 import { prop } from "@typegoose/typegoose";
 
 @InputType()

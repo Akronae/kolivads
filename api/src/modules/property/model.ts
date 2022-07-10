@@ -1,8 +1,8 @@
 import { getModelForClass } from "@typegoose/typegoose";
 import { ObjectId } from "mongodb";
 
-import { Property } from "../../entities/Property";
-import { PropertyCreateInput, PropertyFilterInput } from "./input";
+import { Property } from "@/entities/Property";
+import { PropertyCreateInput, PropertyFilterInput } from "@/modules/property/input";
 
 export const PropertyMongooseModel = getModelForClass(Property);
 

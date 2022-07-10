@@ -1,10 +1,8 @@
-import { Resolver, Arg, Query, Mutation, ID } from "type-graphql";
+import { Resolver, Arg, Query, Mutation } from "type-graphql";
 import { Service } from "typedi";
-import { ObjectId } from "mongodb";
-
-import PropertyService from "./service";
-import { PropertyCreateInput, PropertyFilterInput } from "./input";
-import { Property } from "../../entities/Property";
+import PropertyService from "@/modules/property/service";
+import { PropertyCreateInput, PropertyFilterInput } from "@/modules/property/input";
+import { Property } from "@/entities/Property";
 
 @Service()
 @Resolver((of) => Property)

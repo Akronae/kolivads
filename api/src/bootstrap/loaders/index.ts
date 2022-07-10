@@ -1,10 +1,8 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-
-// loaders
-import apolloLoader from "./apollo";
-import expressLoader from "./express";
-import mongooseLoader from "./mongoose";
+import apolloLoader from "@/bootstrap/loaders/apollo";
+import expressLoader from "@/bootstrap/loaders/express";
+import mongooseLoader from "@/bootstrap/loaders/mongoose";
 
 export default async (app: express.Application): Promise<ApolloServer> => {
   // Load everything related to express

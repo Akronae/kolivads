@@ -1,7 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { Property } from 'types/Property';
-import { createSlice } from 'utils/@reduxjs/toolkit';
-import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { Property } from '@/types/Property';
+import { createSlice } from '@/utils/@reduxjs/toolkit';
+import { useInjectReducer, useInjectSaga } from '@/utils/redux-injectors';
 import { propertiesSaga } from './saga';
 import { PropertiesState } from './types';
 

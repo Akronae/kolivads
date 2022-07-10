@@ -1,6 +1,5 @@
 import { ObjectType, Field, InputType } from "type-graphql";
 import { prop } from "@typegoose/typegoose";
-import { ObjectId } from "mongodb";
 
 @InputType("AddressInput")
 @ObjectType()

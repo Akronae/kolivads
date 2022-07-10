@@ -4,9 +4,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
+    "start": "craco start",
+    "build": "craco build",
+    "eject": "craco eject",
     "start:prod": "yarn run build && serve -s build",
     "checkTs": "tsc --noEmit",
     "eslint": "eslint --ext js,ts,tsx",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.6.9",
+    "@craco/craco": "6.4.5",
     "@reduxjs/toolkit": "1.7.1",
     "@types/fontfaceobserver": "2.1.0",
     "@types/node": "14.14.31",

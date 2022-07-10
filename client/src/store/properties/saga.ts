@@ -1,8 +1,8 @@
 import { call, takeLatest, delay } from 'redux-saga/effects';
-import { request } from 'utils/request';
+import { request } from '@/utils/request';
 import { actions } from '.';
-import { Property } from 'types/Property';
-import { KolivadsApiUrl } from 'utils/api';
+import { Property } from '@/types/Property';
+import { KolivadsApiUrl } from '@/utils/api';
 
 export function* getProperties() {
   yield delay(500);

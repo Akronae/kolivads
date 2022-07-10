@@ -7,12 +7,12 @@ import * as React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
 
 import { Provider } from 'react-redux';
-import { App } from 'app';
+import { App } from '@/app';
 import { HelmetProvider } from 'react-helmet-async';
-import { configureAppStore } from 'store/configureStore';
+import { configureAppStore } from '@/store/configureStore';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-import { KolivadsApiUrl } from 'utils/api';
-import reportWebVitals from 'reportWebVitals';
+import { KolivadsApiUrl } from '@/utils/api';
+import reportWebVitals from '@/reportWebVitals';
 
 const store = configureAppStore();
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;

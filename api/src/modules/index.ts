@@ -1,4 +1,4 @@
-import PropertyResolver from "./property/resolver";
+import PropertyResolver from "@/modules/property/resolver";
 
 export const resolvers: [Function, ...Function[]] = [
   PropertyResolver,
