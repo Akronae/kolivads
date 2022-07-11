@@ -1,83 +1,70 @@
-import Theme from '@/styles/theme';
 import { DefaultProps } from '@/utils/ReactUtils';
 import styled from 'styled-components';
-import { ReactComponent as SearchIcon } from '@/assets/img/magnifier.svg';
 import { Config } from '@/config';
+import { useHistory } from 'react-router-dom';
+import { Text } from './Text';
+import { ThemeManager, lightTheme, darkTheme } from '@/styles/theme';
 
 interface Props extends DefaultProps {}
 
-export function NavBar({ className }: Props) {
+export function NavBar({ className, children }: Props) {
+  const history = useHistory();
+  const isLightTheme = ThemeManager.current.name === lightTheme.name;
+
   return (
     <NavBarWrapper className={className}>
-      <Logo className="logo">
+      <Logo className="logo" onClick={() => history.push('/')}>
         <span className="first-letter">
           {Config.projectName.substring(0, 1)}
         </span>
         {Config.projectName.substring(1)}
       </Logo>
-      <SearchInput className="row search">
-        <SearchIcon className="icon" />
-        <input type="text" placeholder="Search a property" />
-      </SearchInput>
+      {children}
+      <SwitchThemeButton
+        onClick={() =>
+          (ThemeManager.current = isLightTheme ? darkTheme : lightTheme)
+        }
+        tooltip={
+          isLightTheme ? 'Switch to dark theme' : 'Switch to light theme'
+        }
+      >
+        {isLightTheme ? '🌑' : '🌞'}
+      </SwitchThemeButton>
     </NavBarWrapper>
   );
 }
+
+const NavBarWrapper = styled.div`
+  width: 100%;
+  height: ${p => p.theme.navBarHeight};
+  box-shadow: ${p => p.theme.boxShadowSoft};
+  background-color: ${p => p.theme.contentBackgroundColor};
+  display: flex;
+  align-items: center;
+  padding: 0.7em 12em;
+  position: fixed;
+  backdrop-filter: blur(10px);
+
+  .logo {
+    margin-right: 2em;
+  }
+`;
 
 const Logo = styled.div`
   font-size: 1.5em;
   font-weight: bold;
   letter-spacing: 0.03em;
-  color: ${Theme.current.textColorDark};
+  color: ${p => p.theme.textColorDark};
+  cursor: pointer;
 
   .first-letter {
     margin-right: 0.02em;
-    color: ${Theme.current.accentColor};
+    color: ${p => p.theme.accentColor};
   }
 `;
 
-const NavBarWrapper = styled.div`
-  width: 100%;
-  height: 4.5em;
-  box-shadow: ${Theme.current.boxShadowSoft};
-  display: flex;
-  /* justify-content: center; */
-  align-items: center;
-  padding: 0.7em 12em;
-
-  .logo {
-    margin-right: 2em;
-  }
-  .search {
-  }
-`;
-
-const SearchInput = styled.div`
-  border-radius: 10px;
-  background-color: ${Theme.current.contentBackgroundColor};
-  color: ${Theme.current.textColorLighter};
-  padding: 0.8em 1.3em;
-  height: fit-content;
-  border: 1px solid transparent;
-  transition: border-color 0.1s ease;
-
-  &:focus-within {
-    border-color: ${Theme.current.borderColor};
-  }
-
-  .icon {
-    margin-right: 0.5em;
-    fill: ${Theme.current.backgroundTextColor};
-    width: 1.2em;
-    height: auto;
-  }
-
-  input {
-    border: none;
-    background-color: inherit;
-    color: inherit;
-
-    &:focus {
-      outline: none;
-    }
-  }
+const SwitchThemeButton = styled(Text)`
+  cursor: pointer;
+  font-size: 1.5em;
+  margin-left: auto;
 `;

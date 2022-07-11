@@ -13,7 +13,7 @@ import { configureAppStore } from '@/store/configureStore';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { KolivadsApiUrl } from '@/utils/api';
 import reportWebVitals from '@/reportWebVitals';
-import Theme from '@/styles/theme';
+import * as Theme from '@/styles/theme';
 
 window['modules'] = {
   Theme,

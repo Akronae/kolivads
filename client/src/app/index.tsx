@@ -7,9 +7,20 @@ import { GlobalStyle } from '@/styles/global-styles';
 import { HomePage } from './pages/HomePage/Loadable';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
+import { ThemeProvider } from 'styled-components';
+import { ThemeManager, ThemeProperties } from '@/styles/theme';
+
+declare module 'styled-components' {
+  export interface DefaultTheme extends ThemeProperties {}
+}
 
 export function App(props: any) {
   const { i18n } = useTranslation();
+  const [theme, setTheme] = React.useState<ThemeProperties>(
+    ThemeManager.current,
+  );
+  ThemeManager.setTheme = setTheme;
+
   return (
     <BrowserRouter>
       <Helmet
@@ -20,11 +31,13 @@ export function App(props: any) {
         <meta name="description" content="Manage your real estate ads!" />
       </Helmet>
 
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route component={NotFoundPage} />
-      </Switch>
-      <GlobalStyle />
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route component={NotFoundPage} />
+        </Switch>
+        <GlobalStyle />
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

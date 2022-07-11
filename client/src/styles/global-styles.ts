@@ -1,11 +1,14 @@
 import { createGlobalStyle } from 'styled-components';
-import Theme from './theme';
 
 export const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;900&display=swap');
 
+  * {
+    transition: all 0.2s ease-in-out;
+  }
+
   ::selection {
-    background: ${Theme.current.selectionColor};
+    background: ${p => p.theme.selectionColor};
   }
 
   html,
@@ -15,12 +18,12 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   html {
-    background-color: ${Theme.current.backgroundColor};
+    background-color: ${p => p.theme.backgroundColor};
   }
 
   body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: ${Theme.current.textColor};
+    color: ${p => p.theme.textColor};
     font-family: Inter;
     font-weight: 400;
     line-height: 1.2;
@@ -43,7 +46,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   a, b {
-    color: ${Theme.current.accentColor};
+    color: ${p => p.theme.accentColor};
   }
 
   .row {
@@ -54,5 +57,9 @@ export const GlobalStyle = createGlobalStyle`
   .column {
     display: flex;
     flex-direction: column;
+  }
+
+  .opacity-0 {
+    opacity: 0;
   }
 `;

@@ -1,4 +1,6 @@
-class ThemeProperties {
+import React from 'react';
+
+export class ThemeProperties {
   public name: string = '';
   public dominant: string = '';
   public accentColor: string = '';
@@ -29,12 +31,13 @@ class ThemeProperties {
   public boxShadowSharpDiffuse: string = '';
   public boxShadowDiffuse: string = '';
   public boxShadowIcon: string = '';
+  public navBarHeight: string = '4.5em';
   get selectionColor(): string {
     return this.accentColor + '40';
   }
 }
 
-const lightTheme = new ThemeProperties();
+export const lightTheme = new ThemeProperties();
 lightTheme.name = 'light';
 lightTheme.dominant = 'white';
 lightTheme.accentColor = '#5C64EE';
@@ -68,7 +71,7 @@ lightTheme.boxShadowSharpDiffuse =
 lightTheme.boxShadowDiffuse = '2px 4px 10px #00000022';
 lightTheme.boxShadowIcon = '2px 4px 6px #00000020';
 
-const darkTheme = new ThemeProperties();
+export const darkTheme = new ThemeProperties();
 darkTheme.name = 'dark';
 darkTheme.dominant = 'black';
 darkTheme.accentColor = '#684FA3';
@@ -102,7 +105,9 @@ darkTheme.boxShadowSharpDiffuse =
 darkTheme.boxShadowDiffuse = '1px 2px 10px #ffffff1a';
 darkTheme.boxShadowIcon = '2px 4px 6px #000000aa';
 
-export default class Theme {
+export class ThemeManager {
+  static setTheme?: React.Dispatch<React.SetStateAction<ThemeProperties>>;
+
   static get auto(): ThemeProperties {
     const isDarkMode = window.matchMedia(
       '(prefers-color-scheme: dark)',
@@ -110,5 +115,13 @@ export default class Theme {
     return isDarkMode ? darkTheme : lightTheme;
   }
 
-  static current: ThemeProperties = this.auto;
+  private static _current: ThemeProperties = ThemeManager.auto;
+  static get current(): ThemeProperties {
+    return this._current;
+  }
+  static set current(value) {
+    console.log('setting theme to', value.name);
+    this._current = value;
+    if (this.setTheme) this.setTheme(value);
+  }
 }

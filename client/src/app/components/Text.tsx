@@ -1,28 +1,31 @@
 import { DefaultProps, getNodeText } from '@/utils/ReactUtils';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { Div } from '@/app/components/Div';
 
 interface Props extends DefaultProps {
   limit?: number;
 }
 
-export function Text({ limit = 100, children, className }: Props) {
+export function Text(p: Props) {
   const [show, setShow] = useState(false);
 
-  const childrenStr = getNodeText(children);
+  const limit = p.limit || Infinity;
+  const childrenStr = getNodeText(p.children);
   const isTextTruncated = childrenStr.length > limit && !show;
   const toShow = isTextTruncated
     ? childrenStr.substring(0, limit) + '...'
     : childrenStr;
+
   return (
-    <div className={className}>
+    <Div {...p}>
       {toShow}
       {childrenStr.length > limit ? (
         <TextButton onClick={() => setShow(!show)}>
           read {isTextTruncated ? 'more' : 'less'}
         </TextButton>
       ) : null}
-    </div>
+    </Div>
   );
 }
 
