@@ -6,7 +6,7 @@ interface Props extends DefaultProps {
   limit?: number;
 }
 
-export function Text({ limit = 100, children }: Props) {
+export function Text({ limit = 100, children, className }: Props) {
   const [show, setShow] = useState(false);
 
   const childrenStr = getNodeText(children);
@@ -15,7 +15,7 @@ export function Text({ limit = 100, children }: Props) {
     ? childrenStr.substring(0, limit) + '...'
     : childrenStr;
   return (
-    <div>
+    <div className={className}>
       {toShow}
       {childrenStr.length > limit ? (
         <TextButton onClick={() => setShow(!show)}>
