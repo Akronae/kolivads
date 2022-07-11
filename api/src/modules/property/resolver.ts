@@ -1,8 +1,8 @@
-import { Resolver, Arg, Query, Mutation } from "type-graphql";
-import { Service } from "typedi";
-import PropertyService from "@/modules/property/service";
-import { PropertyCreateInput, PropertyFilterInput } from "@/modules/property/input";
 import { Property } from "@/entities/Property";
+import { PropertyCreateInput, PropertyFilterInput, PropertyUpdateInput } from "@/modules/property/input";
+import PropertyService from "@/modules/property/service";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Service } from "typedi";
 
 @Service()
 @Resolver((of) => Property)
@@ -21,6 +21,14 @@ export default class PropertyResolver {
     @Arg("data") data: PropertyCreateInput
   ): Promise<Property> {
     return await this.propertyService.addProperty(data);
+  }
+
+  @Mutation((returns) => Number)
+  async updateProperties(
+    @Arg("filter", { nullable: true }) filter: PropertyFilterInput,
+    @Arg("update", { nullable: true }) update: PropertyUpdateInput
+  ): Promise<number> {
+    return await this.propertyService.update(filter, update);
   }
 
   @Mutation((returns) => Number)

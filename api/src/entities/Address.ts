@@ -1,5 +1,5 @@
-import { ObjectType, Field, InputType } from "type-graphql";
 import { prop } from "@typegoose/typegoose";
+import { Field, InputType, ObjectType } from "type-graphql";
 
 @InputType("AddressInput")
 @ObjectType()

@@ -1,8 +1,8 @@
-import express from "express";
+import { config } from "@/config";
 import bodyParser from "body-parser";
 import cors from "cors";
+import express from "express";
 import helmet from "helmet";
-import { config } from "@/config";
 
 export default async (app: express.Application) => {
   // Body parser only needed during POST on the graphQL path

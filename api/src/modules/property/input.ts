@@ -1,7 +1,7 @@
-import { Field, InputType, ID } from "type-graphql";
-import { MaxLength, Min, MinLength } from "class-validator";
 import { Address } from "@/entities/Address";
 import { prop } from "@typegoose/typegoose";
+import { Min } from "class-validator";
+import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class PropertyCreateInput {
@@ -23,10 +23,34 @@ export class PropertyCreateInput {
   address!: Address;
 
   @Field()
-  rentPerMonth: number;
+  rentPerMonth!: number;
 
   @Field()
-  nbRooms: number;
+  nbRooms!: number;
+}
+
+@InputType()
+export class PropertyUpdateInput {
+  @Field({ nullable: true })
+  floor?: number;
+
+  @Field({ nullable: true })
+  surface?: number;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field({ nullable: true })
+  title?: string;
+
+  @Field(type => Address, { nullable: true })
+  address?: Address;
+
+  @Field({ nullable: true })
+  rentPerMonth?: number;
+
+  @Field({ nullable: true })
+  nbRooms?: number;
 }
 
 @InputType()

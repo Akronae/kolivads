@@ -1,7 +1,7 @@
-import express from "express";
-import mongoose from "mongoose";
 import loaders from "@/bootstrap/loaders";
 import { Config } from "@/config";
+import express from "express";
+import mongoose from "mongoose";
 
 export default async (config: Config) => {
   const app = express();

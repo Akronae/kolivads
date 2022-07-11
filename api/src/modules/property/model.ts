@@ -2,7 +2,7 @@ import { getModelForClass } from "@typegoose/typegoose";
 import { ObjectId } from "mongodb";
 
 import { Property } from "@/entities/Property";
-import { PropertyCreateInput, PropertyFilterInput } from "@/modules/property/input";
+import { PropertyCreateInput, PropertyFilterInput, PropertyUpdateInput } from "@/modules/property/input";
 
 export const PropertyMongooseModel = getModelForClass(Property);
 
@@ -25,7 +25,11 @@ export default class PropertyModel {
     return Property.save();
   }
 
+  async update(filter: PropertyFilterInput, update: PropertyUpdateInput): Promise<number> {
+    return (await PropertyMongooseModel.updateMany(filter, update).lean().exec()).n || 0;
+  }
+
   async deleteAll(filter: PropertyFilterInput): Promise<number> {
-    return (await PropertyMongooseModel.deleteMany(filter).exec()).n || 0;
+    return (await PropertyMongooseModel.deleteMany(filter).lean().exec()).n || 0;
   }
 }

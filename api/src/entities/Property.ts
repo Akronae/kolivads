@@ -1,7 +1,7 @@
-import { ObjectType, Field } from "type-graphql";
-import { prop, plugin } from "@typegoose/typegoose";
 import { Address } from "@/entities/Address";
-import { AutoIncrementID } from '@typegoose/auto-increment'
+import { AutoIncrementID } from '@typegoose/auto-increment';
+import { plugin, prop } from "@typegoose/typegoose";
+import { Field, ObjectType } from "type-graphql";
 
 @plugin(AutoIncrementID)
 @ObjectType()
