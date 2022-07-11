@@ -1,7 +1,6 @@
 import Theme from '@/styles/theme';
 import { Property, PropertyOperation } from '@/types/Property';
 import GqlBuilder from '@/utils/GqlBuilder';
-import { Text } from '@/app/components/Text';
 import {
   OperationVariables,
   QueryHookOptions,
@@ -11,6 +10,9 @@ import {
 } from '@apollo/client';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
+import { PropertyCard } from '@/app/components/PropertyCard';
+import { Config } from '@/config';
+import { NavBar } from '@/app/components/NavBar';
 
 function singleQuery<TData extends object, TVariables = OperationVariables>(
   queryFn: (
@@ -40,60 +42,24 @@ export function HomePage() {
   );
 
   if (!data) return <div>loading..</div>;
-
   return (
     <>
       <Helmet>
         <title>Home</title>
-        <meta name="description" content="Kolivads dashboard" />
+        <meta name="description" content={`${Config.projectName} dashboard`} />
       </Helmet>
-      <div className="row">
+      <NavBar />
+      <ProperiesWrapper className="row">
         {data.map(p => {
-          return (
-            <PropertyCard key={p.id}>
-              <img
-                src={`property-previews/${(p.id + 1) % 9}.jpg`}
-                alt="property preview"
-              />
-              <div className="content">
-                <div className="title">{p.title}</div>
-                <Text className="description">{p.description.repeat(10)}</Text>
-              </div>
-            </PropertyCard>
-          );
+          return <PropertyCard key={p.id} property={p} />;
         })}
-      </div>
+      </ProperiesWrapper>
     </>
   );
 }
 
-const PropertyCard = styled.div`
-  margin: 1em;
-  background-color: ${Theme.current.contentBackgroundColor};
-  border-radius: 10px;
-  box-shadow: ${Theme.current.boxShadowSharp};
-  max-width: 26em;
-
-  img {
-    width: 100%;
-    height: 16em;
-    object-fit: cover;
-    border-radius: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .content {
-    padding: 15px;
-  }
-
-  .title {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 0.5em;
-  }
-
-  .description {
-    margin-top: 0.5em;
-  }
+const ProperiesWrapper = styled.div`
+  flex-flow: wrap;
+  justify-content: space-evenly;
+  margin: 2em 10em;
 `;
