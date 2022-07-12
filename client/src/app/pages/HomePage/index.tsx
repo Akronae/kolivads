@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { useSingleQuery } from '@/utils/ReactUtils';
 import { Text } from '@/app/components/Text';
 import { SearchBar } from '@/app/components/SearchBar';
+import { devices } from '@/utils/deviceUtils';
 
 export function HomePage() {
   const { data } = useSingleQuery(
@@ -39,9 +40,7 @@ export function HomePage() {
         <SearchInfo appearIff={searchText.length > 0}>
           Results for « {searchText} »
         </SearchInfo>
-        <ProperiesWrapper className="row">
-          <PropertyCardLoadSkeleton />
-          <PropertyCardLoadSkeleton />
+        <ProperiesWrapper>
           {!data &&
             [...Array(10)].map((_, i) => <PropertyCardLoadSkeleton key={i} />)}
           {data &&
@@ -55,6 +54,7 @@ export function HomePage() {
                     p.title.includes(searchText) ||
                     p.description.includes(searchText)
                   }
+                  onClick={() => console.log('loll!!!!!')}
                 />
               );
             })}
@@ -65,19 +65,36 @@ export function HomePage() {
 }
 
 const BodyContent = styled.div`
-  padding: calc(${p => p.theme.navBarHeight} + 2em) 10em;
+  padding: calc(${p => p.theme.navBarHeight} + 2em) ${p => p.theme.appPadding};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 const SearchInfo = styled(Text)`
   font-weight: bold;
   color: ${p => p.theme.textColorLight};
+  margin-bottom: 0.7em;
 `;
 
 const ProperiesWrapper = styled.div`
-  flex-flow: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-row-gap: 2em;
+  justify-items: center;
+  grid-column-gap: 1.5em;
+  grid-template-columns: repeat(1, 1fr);
+
+  @media ${devices.tablet} {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media ${devices.laptop} {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media ${devices.desktopL} {
+    grid-template-columns: repeat(5, 1fr);
+  }
 
   .property-card {
-    margin: 1em 0;
+    width: 100%;
   }
 `;

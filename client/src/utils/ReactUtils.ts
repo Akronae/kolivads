@@ -14,14 +14,14 @@ export interface DefaultProps extends DOMAttributes<HTMLElement> {
   // appears on hover, will be assigned to "title" attribute.
   // for ease of use and code readability "title" is reserved for custom props.
   tooltip?: string;
-  children?: ReactNode;
+  children?: ReactNode | ReactNode[];
   // syncs the state of the component "exposed value" with the parent component.
   // see: @/app/components/Input.tsx
   // see: https://vuejs.org/guide/essentials/forms.html
   model?: (value: SetStateAction<string>) => void;
 }
 
-export function getNodeText(node: ReactNode): string {
+export function getNodeText(node: ReactNode | ReactNode[]): string {
   if (!node) return '';
   if (['string', 'number'].includes(typeof node)) return node.toString();
   if (node instanceof Array) return node.map(getNodeText).join('');
@@ -47,4 +47,11 @@ export function useSingleQuery<
     loading: q.loading,
     error: q.error,
   };
+}
+
+export function filterNonTextualNodes(
+  node: ReactNode | ReactNode[],
+): ReactNode[] {
+  if (!Array.isArray(node)) node = [node];
+  return (node as ReactNode[]).filter(n => !getNodeText(n));
 }

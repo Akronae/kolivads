@@ -4,6 +4,7 @@ import { Config } from '@/config';
 import { useHistory } from 'react-router-dom';
 import { Text } from './Text';
 import { ThemeManager, lightTheme, darkTheme } from '@/styles/theme';
+import { devices } from '@/utils/deviceUtils';
 
 interface Props extends DefaultProps {}
 
@@ -41,12 +42,16 @@ const NavBarWrapper = styled.div`
   background-color: ${p => p.theme.contentBackgroundColor};
   display: flex;
   align-items: center;
-  padding: 0.7em 12em;
+  padding: 0.7em calc(${p => p.theme.appPadding} + 1em);
   position: fixed;
   backdrop-filter: blur(10px);
 
   .logo {
-    margin-right: 2em;
+    margin-right: 1em;
+
+    @media ${devices.tablet} {
+      margin-right: 2em;
+    }
   }
 `;
 

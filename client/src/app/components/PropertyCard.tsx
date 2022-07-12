@@ -5,6 +5,7 @@ import { Text } from '@/app/components/Text';
 import { Div } from './Div';
 import { ThemeManager } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
+import { LocationPinIcon, PencilIcon } from '@/app/components/icons';
 
 export interface Props extends DefaultProps {
   property: Property;
@@ -25,51 +26,123 @@ export function PropertyCardLoadSkeleton() {
 }
 
 export function PropertyCard(p: Props) {
-  const { property, ...passedProps } = p;
+  let { property, className, ...passedProps } = p;
+  if (p.onClick) className += ' clickable';
 
   return (
-    <Card {...passedProps}>
-      <img
-        src={`property-previews/${(property.id + 1) % 9}.jpg`}
-        alt="property preview"
-      />
+    <Card {...passedProps} className={className}>
       <div className="content">
-        <div className="title">{property.title}</div>
-        <Text className="description" limit={100}>
-          {property.description}
-        </Text>
+        <div className="preview">
+          <img
+            src={`property-previews/${(property.id % 9) + 1}.jpg`}
+            alt="property preview"
+          />
+        </div>
+
+        <div className="text">
+          <div className="title">{property.title}</div>
+          <Text className="address" leftIcon={<LocationPinIcon />}>
+            {property.address.city}, {property.address.street}
+          </Text>
+          <Text className="description" limit={100}>
+            {property.description}
+          </Text>
+        </div>
       </div>
+      <Text className="click-action-label">
+        <PencilIcon />
+        click to edit
+      </Text>
     </Card>
   );
 }
 const Card = styled(Div)`
-  width: 23em;
   background-color: ${p => p.theme.contentBackgroundColor};
   border-radius: 10px;
   box-shadow: ${p => p.theme.boxShadowSharp};
+  position: relative;
 
-  img {
-    width: 100%;
-    height: 16em;
-    object-fit: cover;
-    border-radius: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      .click-action-label {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+      }
+      .content {
+        filter: brightness(60%);
+      }
+    }
+  }
+
+  .click-action-label {
+    display: none;
+    position: absolute;
+    top: 0;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: white;
+    text-shadow: ${p => p.theme.textShadow};
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, 30%);
+
+    svg {
+      width: 1.5em;
+      height: 1.5em;
+      margin-bottom: 0.5em;
+    }
   }
 
   .content {
-    padding: 15px;
+    border-radius: inherit;
 
-    .title {
-      font-size: 1.5em;
-      font-weight: bold;
-      margin-top: 0.5em;
-      color: ${p => p.theme.textColorDark};
+    .preview {
+      border-radius: inherit;
+
+      img {
+        width: 100%;
+        height: 16em;
+        object-fit: cover;
+        border-radius: inherit;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
 
-    .description {
-      margin-top: 0.5em;
-      color: ${p => p.theme.textColorLighter};
+    .text {
+      padding: 15px;
+
+      .title {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-top: 0.5em;
+        color: ${p => p.theme.textColorDark};
+
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
+
+      .address {
+        font-size: 0.8em;
+        color: ${p => p.theme.textColorExtraLight};
+
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
+
+      .description {
+        margin-top: 0.5em;
+        color: ${p => p.theme.textColorLighter};
+
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
     }
   }
 `;

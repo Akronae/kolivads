@@ -1,3 +1,4 @@
+import { DeviceType, getDeviceType, isDarkTheme } from '@/utils/deviceUtils';
 import React from 'react';
 
 export class ThemeProperties {
@@ -31,7 +32,19 @@ export class ThemeProperties {
   public boxShadowSharpDiffuse: string = '';
   public boxShadowDiffuse: string = '';
   public boxShadowIcon: string = '';
-  public navBarHeight: string = '4.5em';
+  public textShadow: string =
+    '0px 1px 1px rgba(0, 0, 0, 0.6), 1px 0px 1px rgba(0, 0, 0, 0.3)';
+
+  public get navBarHeight(): string {
+    const device = getDeviceType();
+    if (device === DeviceType.Desktop) return '4.5em';
+    return '3.5em';
+  }
+  public get appPadding(): string {
+    const device = getDeviceType();
+    if (device === DeviceType.Desktop) return '10em';
+    return '1em';
+  }
   get selectionColor(): string {
     return this.accentColor + '40';
   }
@@ -99,7 +112,7 @@ darkTheme.borderColorHyperLight = '#303030';
 darkTheme.statusBarBackgroundColor = 'rgba(0,0,0,0.1)';
 darkTheme.boxShadowSharp =
   '0 1px 3px 0 rgba(255, 255, 255, 0.03), 0 1px 2px 0 rgba(255, 255, 255, 0.06)';
-darkTheme.boxShadowSoft = '0px 1px 1px rgba(255, 255, 255, 0.03)';
+darkTheme.boxShadowSoft = '0px 1px 1px rgba(255, 255, 255, 0.04)';
 darkTheme.boxShadowSharpDiffuse =
   '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06), 0px -12px 20px 0px #FFFFFF0d';
 darkTheme.boxShadowDiffuse = '1px 2px 10px #ffffff1a';
@@ -109,10 +122,7 @@ export class ThemeManager {
   static setTheme?: React.Dispatch<React.SetStateAction<ThemeProperties>>;
 
   static get auto(): ThemeProperties {
-    const isDarkMode = window.matchMedia(
-      '(prefers-color-scheme: dark)',
-    ).matches;
-    return isDarkMode ? darkTheme : lightTheme;
+    return isDarkTheme() ? darkTheme : lightTheme;
   }
 
   private static _current: ThemeProperties = ThemeManager.auto;

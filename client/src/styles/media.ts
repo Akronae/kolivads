@@ -1,7 +1,4 @@
-/*
- * Media queries utility
- */
-
+import { screenSizes } from '@/utils/deviceUtils';
 import {
   css,
   DefaultTheme,
@@ -16,27 +13,18 @@ import {
  * Taken from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/32914
  */
 
-// Update your breakpoints if you want
-export const sizes = {
-  small: 600,
-  medium: 1024,
-  large: 1440,
-  xlarge: 1920,
-};
-
 // Iterate through the sizes and create a media template
-export const media = (Object.keys(sizes) as Array<keyof typeof sizes>).reduce(
-  (acc, label) => {
-    acc[label] = (first: any, ...interpolations: any[]) => css`
-      @media (min-width: ${sizes[label]}px) {
-        ${css(first, ...interpolations)}
-      }
-    `;
+export const media = (
+  Object.keys(screenSizes) as Array<keyof typeof screenSizes>
+).reduce((acc, label) => {
+  acc[label] = (first: any, ...interpolations: any[]) => css`
+    @media (min-width: ${screenSizes[label]}px) {
+      ${css(first, ...interpolations)}
+    }
+  `;
 
-    return acc;
-  },
-  {} as { [key in keyof typeof sizes]: MediaFunction },
-);
+  return acc;
+}, {} as { [key in keyof typeof screenSizes]: MediaFunction });
 
 /*
  * @types/styled-component is not working properly as explained in the github issue referenced above.
