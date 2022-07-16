@@ -1,11 +1,7 @@
-import { DOMAttributes, ReactNode, SetStateAction } from 'react';
-import {
-  OperationVariables,
-  QueryHookOptions,
-  QueryResult,
-  TypedDocumentNode,
-} from '@apollo/client';
+import { DOMAttributes, ReactNode, SetStateAction, Dispatch } from 'react';
+import { OperationVariables, QueryHookOptions, useQuery } from '@apollo/client';
 import GqlBuilder from './GqlBuilder';
+import ObjectUtils from './ObjectUtils';
 
 export interface DefaultProps extends DOMAttributes<HTMLElement> {
   appearIff?: boolean;
@@ -18,7 +14,7 @@ export interface DefaultProps extends DOMAttributes<HTMLElement> {
   // syncs the state of the component "exposed value" with the parent component.
   // see: @/app/components/Input.tsx
   // see: https://vuejs.org/guide/essentials/forms.html
-  model?: (value: SetStateAction<string>) => void;
+  model?: [any, (value: SetStateAction<any>) => void];
 }
 
 export function getNodeText(node: ReactNode | ReactNode[]): string {
@@ -33,17 +29,14 @@ export function getNodeText(node: ReactNode | ReactNode[]): string {
 export function useSingleQuery<
   TData extends object,
   TVariables = OperationVariables,
->(
-  queryFn: (
-    query: TypedDocumentNode<TData>,
-    options?: QueryHookOptions<TData, TVariables>,
-  ) => QueryResult<TData, TVariables>,
-  build: GqlBuilder<TData>,
-  options?: QueryHookOptions<TData, TVariables>,
-): { data: TData[] | undefined; loading: boolean; error: Error | undefined } {
-  const q = queryFn(build.build(), options);
+>(build: GqlBuilder<TData>, options?: QueryHookOptions<TData, TVariables>) {
+  const q = useQuery(build.build(), options);
+  var data = q.data ? Object.values(q.data)[0] : q.data;
+  // if (data) data = JSON.parse(JSON.stringify(data));
   return {
-    data: q.data ? Object.values(q.data)[0] : q.data,
+    data,
+    observable: q.observable,
+    refetch: q.refetch,
     loading: q.loading,
     error: q.error,
   };
@@ -54,4 +47,18 @@ export function filterNonTextualNodes(
 ): ReactNode[] {
   if (!Array.isArray(node)) node = [node];
   return (node as ReactNode[]).filter(n => !getNodeText(n));
+}
+
+export function takeSubState(
+  key: string,
+  obj: any,
+  setter: Dispatch<SetStateAction<any>>,
+): [any, (val: SetStateAction<any>) => any] {
+  return [
+    ObjectUtils.get(obj, key),
+    (val: SetStateAction<any>) => {
+      ObjectUtils.set(obj, key, val);
+      setter({ ...obj });
+    },
+  ];
 }

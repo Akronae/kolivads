@@ -1,4 +1,8 @@
-import { DefaultProps, filterNonTextualNodes, getNodeText } from '@/utils/ReactUtils';
+import {
+  DefaultProps,
+  filterNonTextualNodes,
+  getNodeText,
+} from '@/utils/ReactUtils';
 import { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import { Div } from '@/app/components/Div';

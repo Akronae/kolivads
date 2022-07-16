@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Config } from '@/config';
 import { useHistory } from 'react-router-dom';
 import { Text } from './Text';
-import { ThemeManager, lightTheme, darkTheme } from '@/styles/theme';
+import { ThemeManager, lightTheme, darkTheme, ZIndex } from '@/styles/theme';
 import { devices } from '@/utils/deviceUtils';
 
 interface Props extends DefaultProps {}
@@ -44,7 +44,7 @@ const NavBarWrapper = styled.div`
   align-items: center;
   padding: 0.7em calc(${p => p.theme.appPadding} + 1em);
   position: fixed;
-  backdrop-filter: blur(10px);
+  z-index: ${ZIndex.NavBar};
 
   .logo {
     margin-right: 1em;

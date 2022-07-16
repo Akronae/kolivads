@@ -1,6 +1,6 @@
 import { Property, PropertyOperation } from '@/types/Property';
-import GqlBuilder from '@/utils/GqlBuilder';
-import { useQuery } from '@apollo/client';
+import GqlBuilder, { GqlVariable, RequestType } from '@/utils/GqlBuilder';
+import { useMutation } from '@apollo/client';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 import {
@@ -16,16 +16,49 @@ import { SearchBar } from '@/app/components/SearchBar';
 import { devices } from '@/utils/deviceUtils';
 
 export function HomePage() {
-  const { data } = useSingleQuery(
-    useQuery,
+  const [searchText, setSearchText] = useState('');
+  const { data, refetch } = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
       .select(s => s.id)
       .select(s => s.title)
       .select(s => s.description)
-      .select(s => s.address.city)
-      .select(s => s.address.street),
+      .select(s => s.floor)
+      .select(s => s.nbRooms)
+      .select(s => s.surface)
+      .select(s => s.rentPerMonth)
+      .select(s => s.address!.city)
+      .select(s => s.address!.street)
+      .select(s => s.address!.zip)
+      .select(s => s.address!.country),
   );
-  const [searchText, setSearchText] = useState('');
+  const [savePropertyChanges] = useMutation(
+    new GqlBuilder<Property>(PropertyOperation.Update, RequestType.Mutation)
+      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
+      .addArgument('update', new GqlVariable('update', 'PropertyUpdateInput'))
+      .build(),
+  );
+  const onPropertyUpdate = async (property: Property) => {
+    await savePropertyChanges({
+      variables: {
+        filter: { id: property.id },
+        update: {
+          title: property.title,
+          description: property.description,
+          floor: property.floor,
+          nbRooms: property.nbRooms,
+          surface: property.surface,
+          rentPerMonth: property.rentPerMonth,
+          address: {
+            city: property.address!.city,
+            street: property.address!.street,
+            zip: property.address!.zip,
+            country: property.address!.country,
+          },
+        },
+      },
+    });
+    await refetch();
+  };
 
   return (
     <>
@@ -34,7 +67,7 @@ export function HomePage() {
         <meta name="description" content={`${Config.projectName} dashboard`} />
       </Helmet>
       <NavBar>
-        <SearchBar model={setSearchText} />
+        <SearchBar model={[searchText, setSearchText]} />
       </NavBar>
       <BodyContent>
         <SearchInfo appearIff={searchText.length > 0}>
@@ -45,16 +78,17 @@ export function HomePage() {
             [...Array(10)].map((_, i) => <PropertyCardLoadSkeleton key={i} />)}
           {data &&
             data.map(p => {
+              console.log('rendering', p);
               return (
                 <PropertyCard
                   key={p.id}
                   property={p}
                   className="property-card"
                   showIf={
-                    p.title.includes(searchText) ||
-                    p.description.includes(searchText)
+                    p.title?.includes(searchText) ||
+                    p.description?.includes(searchText)
                   }
-                  onClick={() => console.log('loll!!!!!')}
+                  onPropertyUpdate={onPropertyUpdate}
                 />
               );
             })}

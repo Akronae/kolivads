@@ -1,15 +1,53 @@
 import { Property } from '@/types/Property';
-import { DefaultProps } from '@/utils/ReactUtils';
+import { DefaultProps, takeSubState } from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Text } from '@/app/components/Text';
+import { Direction, Separator } from '@/app/components/Separator';
 import { Div } from './Div';
-import { ThemeManager } from '@/styles/theme';
+import { ThemeManager, ZIndex } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
-import { LocationPinIcon, PencilIcon } from '@/app/components/icons';
+import { CrossIcon, LocationPinIcon, PencilIcon } from '@/app/components/icons';
+import { ReactNode, useState } from 'react';
+import { AppManager } from '..';
+import { Input } from './Input';
+import nameof from 'ts-nameof.macro';
+import ObjectUtils from '@/utils/ObjectUtils';
+import areEqual from 'fast-deep-equal';
 
-export interface Props extends DefaultProps {
-  property: Property;
+export interface ModalAction {
+  label: string;
+  onClick: () => void;
 }
+export interface ModalProps extends DefaultProps {
+  title?: ReactNode;
+  actions?: ModalAction[];
+}
+
+export function Modal(p: ModalProps) {
+  return (
+    <ModalWrapper {...p}>
+      <ModalTitle>{p.title}</ModalTitle> {p.children}
+    </ModalWrapper>
+  );
+}
+const ModalWrapper = styled(Div)`
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -40%);
+  z-index: 10;
+  min-width: 95vw;
+  min-height: 20em;
+  background-color: ${p => p.theme.contentBackgroundColor};
+  border-radius: 10px;
+  padding: 2em;
+`;
+
+const ModalTitle = styled(Text)`
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 1em;
+`;
 
 export function PropertyCardLoadSkeleton() {
   return (
@@ -25,37 +63,157 @@ export function PropertyCardLoadSkeleton() {
   );
 }
 
+export interface Props extends DefaultProps {
+  property: Property;
+  onPropertyUpdate?: (property: Property) => void;
+}
+
 export function PropertyCard(p: Props) {
-  let { property, className, ...passedProps } = p;
-  if (p.onClick) className += ' clickable';
+  let { property, onPropertyUpdate, ...passedProps } = p;
+
+  const [editModalToggled, setEditModalToggled] = useState(false);
+  const [originalPropState, setOriginalPropState] = useState(
+    ObjectUtils.clone(property),
+  );
+  const [propState, setPropState] = useState(ObjectUtils.clone(property));
+  if (!areEqual(originalPropState, property)) {
+    setOriginalPropState(ObjectUtils.clone(property));
+    setPropState(ObjectUtils.clone(property));
+  }
+
+  const showModal = () => {
+    setEditModalToggled(true);
+    AppManager.setShowShadow(true);
+  };
+  const hideModal = () => {
+    setEditModalToggled(false);
+    AppManager.setShowShadow(false);
+    setPropState(ObjectUtils.clone(originalPropState));
+  };
+
+  const saveChanges = async () => {
+    onPropertyUpdate?.(propState);
+    hideModal();
+  };
+
+  var onElemClick: (() => void) | undefined = showModal;
+
+  if (editModalToggled) {
+    passedProps.className += ' edit-modal-toggled';
+    onElemClick = undefined;
+  }
+
+  const modelOf = (key: string) => takeSubState(key, propState, setPropState);
 
   return (
-    <Card {...passedProps} className={className}>
+    <Card {...passedProps} onClick={onElemClick}>
       <div className="content">
         <div className="preview">
           <img
-            src={`property-previews/${(property.id % 9) + 1}.jpg`}
+            src={`property-previews/${(propState.id % 9) + 1}.jpg`}
             alt="property preview"
           />
+          <Div
+            showIf={editModalToggled}
+            className="close-btn"
+            onClick={hideModal}
+          >
+            <CrossIcon />
+          </Div>
         </div>
 
         <div className="text">
-          <div className="title">{property.title}</div>
+          <div className="title">{propState.title}</div>
           <Text className="address" leftIcon={<LocationPinIcon />}>
-            {property.address.city}, {property.address.street}
+            {propState.address?.city}, {propState.address?.street}
+          </Text>
+          <Text className="summup">
+            {propState.nbRooms} rooms for {propState.surface}m² at floor{' '}
+            {propState.floor} for {propState.rentPerMonth}€/month
           </Text>
           <Text className="description" limit={100}>
-            {property.description}
+            {propState.description}
           </Text>
+          <Div showIf={editModalToggled}>
+            <Separator />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.title))}
+              type="text"
+              label="Title"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.description))}
+              type="text"
+              label="Description"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.floor))}
+              type="number"
+              label="Floor"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.nbRooms))}
+              type="number"
+              label="Rooms"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.surface))}
+              type="number"
+              label="Surface"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.rentPerMonth))}
+              type="number"
+              label="€/month"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.address!.street))}
+              type="text"
+              label="Street"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.address!.city))}
+              type="text"
+              label="City"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.address!.zip))}
+              type="text"
+              label="Zip"
+            />
+            <Stat
+              model={modelOf(nameof.full<Property>(p => p.address!.country))}
+              type="text"
+              label="Country"
+            />
+            <Div className="actions">
+              <Div className="btn" onClick={hideModal}>
+                Cancel
+              </Div>
+              <Separator direction={Direction.Vertical} />
+              <Div className="btn" onClick={saveChanges}>
+                Save
+              </Div>
+            </Div>
+          </Div>
         </div>
       </div>
-      <Text className="click-action-label">
+      <Text className="click-action-label" showIf={!editModalToggled}>
         <PencilIcon />
         click to edit
       </Text>
     </Card>
   );
 }
+
+const Stat = styled(Input)`
+  margin: 0.5em 0;
+  width: 100%;
+
+  .label {
+    min-width: 6em;
+  }
+`;
 const Card = styled(Div)`
   background-color: ${p => p.theme.contentBackgroundColor};
   border-radius: 10px;
@@ -77,17 +235,36 @@ const Card = styled(Div)`
     }
   }
 
+  &.edit-modal-toggled {
+    position: fixed;
+    z-index: ${ZIndex.Modal};
+    max-width: 45em;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -40%);
+    max-height: 80vh;
+    overflow-y: scroll;
+
+    .content {
+    }
+
+    .content .text {
+      padding: 30px;
+      padding-bottom: 15px;
+    }
+  }
+
   .click-action-label {
     display: none;
     position: absolute;
     top: 0;
-    font-size: 1.3em;
+    font-size: 1.5em;
     font-weight: bold;
     color: white;
     text-shadow: ${p => p.theme.textShadow};
     left: 50%;
-    top: 30%;
-    transform: translate(-50%, 30%);
+    top: 40%;
+    transform: translate(-50%, -40%);
 
     svg {
       width: 1.5em;
@@ -109,6 +286,21 @@ const Card = styled(Div)`
         border-radius: inherit;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
+      }
+
+      .close-btn {
+        position: absolute;
+        width: 30px;
+        top: 10px;
+        height: 30px;
+        right: 10px;
+        fill: white;
+
+        svg {
+          fill: inherit;
+          filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 1));
+          cursor: pointer;
+        }
       }
     }
 
@@ -141,6 +333,29 @@ const Card = styled(Div)`
 
         &::first-letter {
           text-transform: uppercase;
+        }
+      }
+
+      .summup {
+        margin-top: 0.5em;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin-top: 1.5em;
+
+        .btn {
+          margin: auto;
+          border-radius: 10px;
+          width: 100%;
+          text-align: center;
+          padding: 20px 0;
+
+          &:hover {
+            background-color: ${p => p.theme.borderColor};
+          }
         }
       }
     }

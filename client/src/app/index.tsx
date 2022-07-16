@@ -7,12 +7,19 @@ import { GlobalStyle } from '@/styles/global-styles';
 import { HomePage } from './pages/HomePage/Loadable';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
-import { ThemeProvider } from 'styled-components';
-import { ThemeManager, ThemeProperties } from '@/styles/theme';
+import styled, { ThemeProvider } from 'styled-components';
+import { ThemeManager, ThemeProperties, ZIndex } from '@/styles/theme';
 import { useReducer } from 'react';
+import { Div } from './components/Div';
+import { isDarkTheme } from '@/utils/deviceUtils';
 
 declare module 'styled-components' {
   export interface DefaultTheme extends ThemeProperties {}
+}
+
+export class AppManager {
+  public static showShadow = false;
+  public static setShowShadow: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function App(props: any) {
@@ -24,6 +31,10 @@ export function App(props: any) {
 
   ThemeManager.setTheme = setTheme;
   window.addEventListener('resize', forceUpdate);
+
+  [AppManager.showShadow, AppManager.setShowShadow] = React.useState(
+    false as boolean,
+  );
 
   return (
     <BrowserRouter>
@@ -41,7 +52,23 @@ export function App(props: any) {
           <Route component={NotFoundPage} />
         </Switch>
         <GlobalStyle />
+        <AppShadow showIf={AppManager.showShadow} />
       </ThemeProvider>
     </BrowserRouter>
   );
 }
+
+const AppShadow = styled(Div)`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: ${ZIndex.AppShadow};
+
+  :root {
+    color-scheme: ${isDarkTheme() ? 'dark' : 'light'};
+  }
+`;

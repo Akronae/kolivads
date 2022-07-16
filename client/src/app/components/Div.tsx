@@ -10,7 +10,7 @@ interface Props extends DefaultProps {}
  * In an OOP paradigm, this would be the base class for all components.
  * Every component should 'extend' it, in this way:
  * ```
- * export function MyComponent(p: Props) {
+ * export function MyComponent(p: DefaultProps) {
  *   return <Div {...p}>
  *    {}
  *   </Div>;
@@ -20,16 +20,23 @@ interface Props extends DefaultProps {}
 export function Div(p: Props) {
   const { appearIff, children, showIf, model, ...passedProps } = p;
 
-  if (p.showIf === false) return null;
-  if (p.appearIff === false) passedProps.className += ' opacity-0';
+  if (showIf === false) return null;
+  if (appearIff === false) passedProps.className += ' opacity-0';
+  if (p.onClick) passedProps.className += ' clickable';
 
   return (
     <DivWrapper {...passedProps} title={p.tooltip}>
-      {p.children}
+      {children}
     </DivWrapper>
   );
 }
 
 const DivWrapper = styled.div`
-  /* style goes here */
+  &.opacity-0 {
+    opacity: 0;
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
 `;

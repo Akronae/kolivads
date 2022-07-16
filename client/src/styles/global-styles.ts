@@ -1,12 +1,13 @@
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;900&display=swap');
-
   * {
     transition: all 0.2s ease-in-out;
   }
 
+  :root {
+    color-scheme: ${props => props.theme.colorScheme};
+  }
   ::selection {
     background: ${p => p.theme.selectionColor};
   }
@@ -57,9 +58,5 @@ export const GlobalStyle = createGlobalStyle`
   .column {
     display: flex;
     flex-direction: column;
-  }
-
-  .opacity-0 {
-    opacity: 0;
   }
 `;

@@ -1,6 +1,12 @@
 import { DeviceType, getDeviceType, isDarkTheme } from '@/utils/deviceUtils';
 import React from 'react';
 
+export enum ZIndex {
+  NavBar = 1,
+  AppShadow,
+  Modal,
+}
+
 export class ThemeProperties {
   public name: string = '';
   public dominant: string = '';
@@ -32,6 +38,7 @@ export class ThemeProperties {
   public boxShadowSharpDiffuse: string = '';
   public boxShadowDiffuse: string = '';
   public boxShadowIcon: string = '';
+  public colorScheme: string = '';
   public textShadow: string =
     '0px 1px 1px rgba(0, 0, 0, 0.6), 1px 0px 1px rgba(0, 0, 0, 0.3)';
 
@@ -83,6 +90,7 @@ lightTheme.boxShadowSharpDiffuse =
   '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0px -12px 20px 0px #0000000d';
 lightTheme.boxShadowDiffuse = '2px 4px 10px #00000022';
 lightTheme.boxShadowIcon = '2px 4px 6px #00000020';
+lightTheme.colorScheme = 'light';
 
 export const darkTheme = new ThemeProperties();
 darkTheme.name = 'dark';
@@ -117,6 +125,7 @@ darkTheme.boxShadowSharpDiffuse =
   '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06), 0px -12px 20px 0px #FFFFFF0d';
 darkTheme.boxShadowDiffuse = '1px 2px 10px #ffffff1a';
 darkTheme.boxShadowIcon = '2px 4px 6px #000000aa';
+darkTheme.colorScheme = 'dark';
 
 export class ThemeManager {
   static setTheme?: React.Dispatch<React.SetStateAction<ThemeProperties>>;

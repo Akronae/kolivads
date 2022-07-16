@@ -1,24 +1,67 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
+import ObjectUtils from './ObjectUtils';
 import StringUtils from './StringUtils';
 
-export default class GqlBuilder<T extends object> {
-  private fields: string[] = [];
+export class GqlVariable {
+  public name: string;
+  constructor(name: string, public type: string) {
+    this.name = '$' + name;
+  }
+}
 
-  constructor(public operation: string) {}
+export enum RequestType {
+  Query = 'query',
+  Mutation = 'mutation',
+}
+
+export default class GqlBuilder<T extends object> {
+  private selectFields: string[] = [];
+  private arguments: { [index: string]: any } = {};
+  private variables: GqlVariable[] = [];
+
+  constructor(
+    public operation: string,
+    public requestType: RequestType = RequestType.Query,
+  ) {}
 
   /**
-   * Takes a lambda and extracts its field name.
+   * Takes a lambda and extracts its identifier name.
    * i.e. select(t => t.name) -> name
    */
-  public select(selector: (obj: T) => any): GqlBuilder<T> {
-    var selected = selector.toString();
+  public getLambdaIdentifierName(lambda: (args: any) => any): string {
+    var selected = lambda.toString();
+
+    if (selected.includes('=== void 0 ? void 0 :'))
+      throw new Error(
+        'please do not use optional chaining operator (?.) use instead non-null assertion operator (!.) in order to avoid property name from changing',
+      );
+
     selected = selected.substring(selected.indexOf('.') + 1);
     selected = StringUtils.trimFn(
       selected,
       char => !StringUtils.isIdentifier(char),
     );
-    this.fields.push(selected);
+    return selected;
+  }
 
+  /**
+   * Add a field that the query should return.
+   */
+  public select(selector: (obj: T) => any): GqlBuilder<T> {
+    this.selectFields.push(this.getLambdaIdentifierName(selector));
+    return this;
+  }
+
+  /**
+   * Add an argument to the query.
+   */
+  public addArgument(name: string, value: any | GqlVariable): GqlBuilder<T> {
+    var valueStr = ObjectUtils.toStringWithoutKeyQuotes(value);
+    if (value instanceof GqlVariable) {
+      this.variables.push(value);
+      valueStr = value.name;
+    }
+    this.arguments[name] = valueStr;
     return this;
   }
 
@@ -26,10 +69,10 @@ export default class GqlBuilder<T extends object> {
    * Transforms ['a', 'b.c', 'b.d'] to { a: null, b: { c: null, d: null } }
    */
   private buildFieldMap(): object {
-    this.fields = this.fields.sort();
+    this.selectFields = this.selectFields.sort();
     const fieldMap = {};
 
-    this.fields.forEach(field => {
+    this.selectFields.forEach(field => {
       var target = fieldMap;
       while (field.includes('.')) {
         var key = field.substring(0, field.indexOf('.'));
@@ -48,27 +91,44 @@ export default class GqlBuilder<T extends object> {
    */
   private mapToStr(obj: object, identation: number = 0): string {
     if (obj === null) return '';
+    const entries = Object.entries(obj);
+    if (entries.length === 0) return '';
 
-    return Object.entries(obj)
+    const strFields = entries
       .map(
         ([key, value]) =>
           `${'\t'.repeat(identation)}` +
-          `${key} {\n${this.mapToStr(value, identation + 1)}\n}`,
+          `${key} ${this.mapToStr(value, identation + 1)}`,
       )
-      .join('\n')
-      .replaceAll('{\n\n}', '');
+      .join(', ');
+    // .replaceAll('{\n\n}', '');
+
+    return `{${strFields}}`;
+  }
+
+  private argsToStr(args: object): string {
+    const entries = Object.entries(args);
+    if (entries.length === 0) return '';
+    return `(${entries.map(([key, value]) => `${key}: ${value}`).join(', ')})`;
+  }
+
+  private variablesToStr(variables: GqlVariable[]): string {
+    if (variables.length === 0) return '';
+    return `(${variables.map(v => `${v.name}: ${v.type}`).join(', ')})`;
   }
 
   public build(): TypedDocumentNode<T> {
     const map = this.buildFieldMap();
-
-    const query = gql`
-            query {
-                ${this.operation} {
-                    ${this.mapToStr(map)}
-                }
-            }
-        `;
+    var queryStr = `
+      ${this.requestType} ${this.operation} ${this.variablesToStr(
+      this.variables,
+    )} {
+          ${this.operation} ${this.argsToStr(this.arguments)} ${this.mapToStr(
+      map,
+    )}
+      }
+    `;
+    const query = gql(queryStr);
 
     return query;
   }
