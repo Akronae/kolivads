@@ -1,5 +1,5 @@
 import { Address } from "@/entities/Address";
-import { AutoIncrementID } from '@typegoose/auto-increment';
+import { AutoIncrementID } from "@typegoose/auto-increment";
 import { plugin, prop } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
 
@@ -24,6 +24,10 @@ export class Property {
   @Field(() => Date)
   updatedAt!: Date;
 
+  @prop()
+  @Field()
+  landLord!: string;
+
   @prop({ min: 0 })
   @Field()
   floor!: number;
@@ -41,7 +45,7 @@ export class Property {
   title!: string;
 
   @prop()
-  @Field(type => Address)
+  @Field((type) => Address)
   address!: Address;
 
   @prop({ min: 1 })
@@ -51,4 +55,12 @@ export class Property {
   @prop({ min: 1 })
   @Field()
   nbRooms: number;
+
+  @prop()
+  @Field()
+  isReserved!: boolean;
+
+  @prop()
+  @Field({ nullable: true })
+  reservedBy?: string;
 }

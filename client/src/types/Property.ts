@@ -1,17 +1,19 @@
 import { Address } from './Address';
 
-export class Property {
-  id: number = 0;
-  createdAt: Date | undefined = undefined;
-  landlord: string | undefined = undefined;
-  updatedAt: Date | undefined = undefined;
-  floor: number | undefined = undefined;
-  surface: number | undefined = undefined;
-  description: string | undefined = undefined;
-  title: string | undefined = undefined;
-  address: Address | undefined = undefined;
-  rentPerMonth: number | undefined = undefined;
-  nbRooms: number | undefined = undefined;
+export interface Property {
+  id: number;
+  createdAt: Date;
+  landlord: string;
+  updatedAt: Date;
+  floor: number;
+  surface: number;
+  description: string;
+  title: string;
+  address: Address;
+  rentPerMonth: number;
+  nbRooms: number;
+  isReserved: boolean;
+  reservedBy: string;
 }
 
 export enum PropertyOperation {
