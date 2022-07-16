@@ -78,7 +78,6 @@ export function HomePage() {
             [...Array(10)].map((_, i) => <PropertyCardLoadSkeleton key={i} />)}
           {data &&
             data.map(p => {
-              console.log('rendering', p);
               return (
                 <PropertyCard
                   key={p.id}

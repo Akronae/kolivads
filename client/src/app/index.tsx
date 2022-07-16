@@ -12,14 +12,10 @@ import { ThemeManager, ThemeProperties, ZIndex } from '@/styles/theme';
 import { useReducer } from 'react';
 import { Div } from './components/Div';
 import { isDarkTheme } from '@/utils/deviceUtils';
+import { AppManager } from './AppManager';
 
 declare module 'styled-components' {
   export interface DefaultTheme extends ThemeProperties {}
-}
-
-export class AppManager {
-  public static showShadow = false;
-  public static setShowShadow: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function App(props: any) {
@@ -52,7 +48,10 @@ export function App(props: any) {
           <Route component={NotFoundPage} />
         </Switch>
         <GlobalStyle />
-        <AppShadow showIf={AppManager.showShadow} />
+        <AppShadow
+          showIf={AppManager.showShadow}
+          onClick={AppManager.showShadowOnClick}
+        />
       </ThemeProvider>
     </BrowserRouter>
   );

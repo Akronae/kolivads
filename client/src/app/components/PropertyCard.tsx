@@ -8,7 +8,7 @@ import { ThemeManager, ZIndex } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
 import { CrossIcon, LocationPinIcon, PencilIcon } from '@/app/components/icons';
 import { useState } from 'react';
-import { AppManager } from '..';
+import { AppManager } from '../AppManager';
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
@@ -35,6 +35,7 @@ export function PropertyCard(p: Props) {
   const showModal = () => {
     setEditModalToggled(true);
     AppManager.setShowShadow(true);
+    AppManager.showShadowOnClickOnce(hideModal);
   };
   const hideModal = () => {
     setEditModalToggled(false);
