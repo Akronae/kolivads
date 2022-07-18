@@ -4,11 +4,10 @@ import {
   useStateIfDefined,
 } from '@/utils/ReactUtils';
 import styled from 'styled-components';
-import { Text } from '@/app/components/Text';
 import { Div } from './Div';
 import { ZIndex } from '@/styles/theme';
 import { CrossIcon } from '@/app/components/icons';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 export interface Props extends DefaultProps {
   topActions?: ReactNode;
@@ -16,6 +15,7 @@ export interface Props extends DefaultProps {
   previewContent?: ReactNode;
   modalContent?: ReactNode;
   toggleModel?: ReactiveState<boolean>;
+  expandInPlace?: boolean;
 }
 
 /**
@@ -29,39 +29,48 @@ export function ExpandableModal(p: Props) {
     modalContent,
     topActions,
     toggleModel,
+    expandInPlace,
     ...passedProps
   } = p;
 
-  const [editModalToggled, setEditModalToggled] = useStateIfDefined(
-    toggleModel,
-    false,
-  );
+  passedProps.className += ' ExpandableModal';
+
+  const editModalToggled = useStateIfDefined(toggleModel, false);
 
   const showModal = () => {
-    setEditModalToggled(true);
+    editModalToggled.state = true;
   };
   const hideModal = () => {
-    setEditModalToggled(false);
+    editModalToggled.state = false;
   };
 
   var onElemClick: (() => void) | undefined = showModal;
 
-  if (editModalToggled) {
+  useEffect(() => {
+    if (expandInPlace) {
+      editModalToggled.state = true;
+      passedProps.className += ' expand-in-place';
+    }
+  }, [editModalToggled, passedProps, expandInPlace]);
+
+  if (editModalToggled.state) {
     passedProps.className += ' edit-modal-toggled';
     onElemClick = undefined;
-  } else {
   }
 
   return (
     <>
-      <ModalShadow showIf={editModalToggled} onClick={hideModal} />
+      <ModalShadow
+        showIf={editModalToggled.state && !expandInPlace}
+        onClick={hideModal}
+      />
       <ExpandableModalWrapper {...passedProps} onClick={onElemClick}>
         <div className="content">
           <div className="preview">
             <Div className="actions">
               {topActions}
               <Div
-                showIf={editModalToggled}
+                showIf={editModalToggled.state && !expandInPlace}
                 className="close-btn"
                 onClick={hideModal}
                 tooltip="close"
@@ -71,11 +80,11 @@ export function ExpandableModal(p: Props) {
             </Div>
             {previewContent}
           </div>
-          <Div showIf={editModalToggled}>{modalContent}</Div>
+          <Div showIf={editModalToggled.state}>{modalContent}</Div>
         </div>
-        <Text className="click-action-label" showIf={!editModalToggled}>
+        <Div className="click-action-label" showIf={!editModalToggled.state}>
           {hoverContent}
-        </Text>
+        </Div>
       </ExpandableModalWrapper>
     </>
   );
@@ -94,6 +103,10 @@ const ExpandableModalWrapper = styled(Div)`
         display: flex;
         flex-direction: column-reverse;
         align-items: center;
+
+        .Separator {
+          background-color: rgba(255, 255, 255, 0.4);
+        }
       }
       .content {
         filter: brightness(60%);
@@ -102,16 +115,19 @@ const ExpandableModalWrapper = styled(Div)`
   }
 
   &.edit-modal-toggled {
-    position: fixed;
-    z-index: ${ZIndex.Modal};
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -40%);
     overflow-y: overlay;
-    min-width: 20em;
-    max-width: 45em;
-    min-height: 10em;
-    max-height: 80vh;
+
+    &:not(.expand-in-place) {
+      position: fixed;
+      z-index: ${ZIndex.Modal};
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 20em;
+      max-width: 45em;
+      min-height: 10em;
+      max-height: 80vh;
+    }
 
     ::-webkit-scrollbar-thumb {
       background-color: ${p => p.theme.backgroundTextColor};

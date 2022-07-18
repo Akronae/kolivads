@@ -31,32 +31,7 @@ export function HomePage() {
       .select(s => s.address!.zip)
       .select(s => s.address!.country),
   );
-  const [savePropertyChanges] = useMutation(
-    new GqlBuilder<Property>(PropertyOperation.Update, RequestType.Mutation)
-      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
-      .addArgument('update', new GqlVariable('update', 'PropertyUpdateInput'))
-      .build(),
-  );
   const onPropertyUpdate = async (property: Property) => {
-    await savePropertyChanges({
-      variables: {
-        filter: { id: property.id },
-        update: {
-          title: property.title,
-          description: property.description,
-          floor: property.floor,
-          nbRooms: property.nbRooms,
-          surface: property.surface,
-          rentPerMonth: property.rentPerMonth,
-          address: {
-            city: property.address!.city,
-            street: property.address!.street,
-            zip: property.address!.zip,
-            country: property.address!.country,
-          },
-        },
-      },
-    });
     await refetch();
   };
 

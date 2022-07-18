@@ -4,6 +4,7 @@ import {
   PropertyCardLoadSkeleton,
 } from '@/app/components/PropertyCard';
 import { Property, PropertyOperation } from '@/types/Property';
+import { devices } from '@/utils/deviceUtils';
 import GqlBuilder from '@/utils/GqlBuilder';
 import { useSingleQuery } from '@/utils/ReactUtils';
 import { Helmet } from 'react-helmet-async';
@@ -15,7 +16,7 @@ export interface PageParams {
 }
 export function ViewProperty() {
   const { id } = useParams<PageParams>();
-  const { data } = useSingleQuery(
+  const { data, refetch } = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
       .addArgument('filter', {
         id: Number.parseInt(id),
@@ -33,6 +34,10 @@ export function ViewProperty() {
       .select(s => s.address!.country),
   );
 
+  const onPropertyUpdate = async () => {
+    await refetch();
+  };
+
   const property = data?.[0];
 
   return (
@@ -47,7 +52,13 @@ export function ViewProperty() {
       <NavBar />
       <BodyContent>
         {!property && <PropertyCardLoadSkeleton />}
-        {property && <PropertyCard property={property} />}
+        {property && (
+          <PropertyCard
+            property={property}
+            onPropertyUpdate={onPropertyUpdate}
+            expandInPlace={true}
+          />
+        )}
       </BodyContent>
     </>
   );
@@ -58,4 +69,17 @@ const BodyContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  .ExpandableModal {
+    margin: auto;
+
+    .body {
+      padding-left: 2em;
+      padding-right: 2em;
+    }
+
+    @media ${devices.laptop} {
+      width: 50vw;
+    }
+  }
 `;

@@ -14,6 +14,7 @@ interface Props extends DefaultProps {
 export function Separator(p: Props) {
   const { direction = Direction.Horizontal, ...passedProps } = p;
 
+  passedProps.className += ' Separator';
   passedProps.className += ' ' + direction;
 
   return <SeparatorWrapper {...passedProps}></SeparatorWrapper>;

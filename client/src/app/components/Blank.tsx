@@ -5,6 +5,10 @@ import { Div } from '@/app/components/Div';
 interface Props extends DefaultProps {}
 
 export function Blank(p: Props) {
+  const { ...passedProps } = p;
+
+  passedProps.className += ' Blank';
+
   return <BlankWrapper {...p}></BlankWrapper>;
 }
 

@@ -1,4 +1,4 @@
-import { Property } from '@/types/Property';
+import { Property, PropertyOperation } from '@/types/Property';
 import { DefaultProps, takeSubState, useState } from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Text } from '@/app/components/Text';
@@ -12,14 +12,48 @@ import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
 import areEqual from 'fast-deep-equal';
+import { useMutation } from '@apollo/client';
+import GqlBuilder, { GqlVariable, RequestType } from '@/utils/GqlBuilder';
 
 export interface Props extends DefaultProps {
   property: Property;
   onPropertyUpdate?: (property: Property) => void;
+  expandInPlace?: boolean;
 }
 
 export function PropertyCard(p: Props) {
-  let { property, onPropertyUpdate, ...passedProps } = p;
+  let { property, onPropertyUpdate, expandInPlace, ...passedProps } = p;
+
+  const [savePropertyChanges] = useMutation(
+    new GqlBuilder<Property>(PropertyOperation.Update, RequestType.Mutation)
+      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
+      .addArgument('update', new GqlVariable('update', 'PropertyUpdateInput'))
+      .build(),
+  );
+  const saveChanges = async () => {
+    await savePropertyChanges({
+      variables: {
+        filter: { id: propState.id },
+        update: {
+          title: propState.title,
+          description: propState.description,
+          floor: propState.floor,
+          nbRooms: propState.nbRooms,
+          surface: propState.surface,
+          rentPerMonth: propState.rentPerMonth,
+          address: {
+            city: propState.address!.city,
+            street: propState.address!.street,
+            zip: propState.address!.zip,
+            country: propState.address!.country,
+          },
+        },
+      },
+    });
+    setOriginalPropState(propState);
+    onPropertyUpdate?.(propState);
+    hideModal();
+  };
 
   const [originalPropState, setOriginalPropState] = useState(
     ObjectUtils.clone(property),
@@ -37,17 +71,13 @@ export function PropertyCard(p: Props) {
     setPropState(ObjectUtils.clone(originalPropState));
   };
 
-  const saveChanges = async () => {
-    onPropertyUpdate?.(propState);
-    hideModal();
-  };
-
   const modelOf = (key: string) => takeSubState(key, propState, setPropState);
 
   return (
     <Card
       {...passedProps}
       toggleModel={modalToggled}
+      expandInPlace={expandInPlace}
       previewContent={
         <>
           <img
@@ -73,7 +103,7 @@ export function PropertyCard(p: Props) {
         <Div
           onClick={() => window.open('/property/' + propState.id, '_blank')}
           tooltip="view more"
-          appearOnParentHover={true}
+          showIf={modalToggled.state && !expandInPlace}
         >
           <ShareIcon />
         </Div>
@@ -144,8 +174,19 @@ export function PropertyCard(p: Props) {
       }
       hoverContent={
         <>
-          <PencilIcon />
-          click to edit
+          <Div
+            className="column center"
+            onClick={() => window.open('/property/' + propState.id, '_blank')}
+          >
+            <ShareIcon />
+            view more
+          </Div>
+          <Separator />
+
+          <Div className="column center">
+            <PencilIcon />
+            quick edit
+          </Div>
         </>
       }
     />
