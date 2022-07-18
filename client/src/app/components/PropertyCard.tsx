@@ -1,18 +1,18 @@
 import { Property } from '@/types/Property';
-import { DefaultProps, takeSubState } from '@/utils/ReactUtils';
+import { DefaultProps, takeSubState, useState } from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Text } from '@/app/components/Text';
 import { Direction, Separator } from '@/app/components/Separator';
+import { ExpandableModal } from '@/app/components/ExpandableModal';
 import { Div } from './Div';
 import { ThemeManager, ZIndex } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
-import { CrossIcon, LocationPinIcon, PencilIcon } from '@/app/components/icons';
-import { useState } from 'react';
-import { AppManager } from '../AppManager';
+import { LocationPinIcon, PencilIcon, ShareIcon } from '@/app/components/icons';
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
 import areEqual from 'fast-deep-equal';
+import { useHistory } from 'react-router-dom';
 
 export interface Props extends DefaultProps {
   property: Property;
@@ -22,24 +22,20 @@ export interface Props extends DefaultProps {
 export function PropertyCard(p: Props) {
   let { property, onPropertyUpdate, ...passedProps } = p;
 
-  const [editModalToggled, setEditModalToggled] = useState(false);
   const [originalPropState, setOriginalPropState] = useState(
     ObjectUtils.clone(property),
   );
   const [propState, setPropState] = useState(ObjectUtils.clone(property));
+  const modalToggled = useState(false);
+  const history = useHistory();
+
   if (!areEqual(originalPropState, property)) {
     setOriginalPropState(ObjectUtils.clone(property));
     setPropState(ObjectUtils.clone(property));
   }
 
-  const showModal = () => {
-    setEditModalToggled(true);
-    AppManager.setShowShadow(true);
-    AppManager.showShadowOnClickOnce(hideModal);
-  };
   const hideModal = () => {
-    setEditModalToggled(false);
-    AppManager.setShowShadow(false);
+    modalToggled.state = false;
     setPropState(ObjectUtils.clone(originalPropState));
   };
 
@@ -48,113 +44,113 @@ export function PropertyCard(p: Props) {
     hideModal();
   };
 
-  var onElemClick: (() => void) | undefined = showModal;
-
-  if (editModalToggled) {
-    passedProps.className += ' edit-modal-toggled';
-    onElemClick = undefined;
-  }
-
   const modelOf = (key: string) => takeSubState(key, propState, setPropState);
 
   return (
-    <Card {...passedProps} onClick={onElemClick}>
-      <div className="content">
-        <div className="preview">
+    <Card
+      {...passedProps}
+      toggleModel={modalToggled}
+      previewContent={
+        <>
           <img
-            src={`property-previews/${(propState.id % 9) + 1}.jpg`}
+            src={`/property-previews/${(propState.id % 9) + 1}.jpg`}
             alt="property preview"
           />
-          <Div
-            showIf={editModalToggled}
-            className="close-btn"
-            onClick={hideModal}
-          >
-            <CrossIcon />
-          </Div>
-        </div>
-
-        <div className="text">
-          <div className="title">{propState.title}</div>
-          <Text className="address" leftIcon={<LocationPinIcon />}>
-            {propState.address?.city}, {propState.address?.street}
-          </Text>
-          <Text className="summup">
-            {propState.nbRooms} rooms for {propState.surface}m² at floor{' '}
-            {propState.floor} for {propState.rentPerMonth}€/month
-          </Text>
-          <Text className="description" limit={100}>
-            {propState.description}
-          </Text>
-          <Div showIf={editModalToggled}>
-            <Separator />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.title))}
-              type="text"
-              label="Title"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.description))}
-              type="text"
-              label="Description"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.floor))}
-              type="number"
-              label="Floor"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.nbRooms))}
-              type="number"
-              label="Rooms"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.surface))}
-              type="number"
-              label="Surface"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.rentPerMonth))}
-              type="number"
-              label="€/month"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.address!.street))}
-              type="text"
-              label="Street"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.address!.city))}
-              type="text"
-              label="City"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.address!.zip))}
-              type="text"
-              label="Zip"
-            />
-            <Stat
-              model={modelOf(nameof.full<Property>(p => p.address!.country))}
-              type="text"
-              label="Country"
-            />
-            <Div className="actions">
-              <Div className="btn" onClick={hideModal}>
-                Cancel
-              </Div>
-              <Separator direction={Direction.Vertical} />
-              <Div className="btn" onClick={saveChanges}>
-                Save
-              </Div>
+          <div className="body">
+            <div className="title">{propState.title}</div>
+            <Text className="address" leftIcon={<LocationPinIcon />}>
+              {propState.address?.city}, {propState.address?.street}
+            </Text>
+            <Text className="summup">
+              {propState.nbRooms} rooms for {propState.surface}m² at floor{' '}
+              {propState.floor} for {propState.rentPerMonth}€/month
+            </Text>
+            <Text className="description" limit={100}>
+              {propState.description}
+            </Text>
+          </div>
+        </>
+      }
+      topActions={
+        <Div
+          onClick={() => history.push('/property/' + propState.id)}
+          tooltip="view more"
+          appearOnParentHover={true}
+        >
+          <ShareIcon />
+        </Div>
+      }
+      modalContent={
+        <div className="body">
+          <Separator />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.title))}
+            type="text"
+            label="Title"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.description))}
+            type="text"
+            label="Description"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.floor))}
+            type="number"
+            label="Floor"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.nbRooms))}
+            type="number"
+            label="Rooms"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.surface))}
+            type="number"
+            label="Surface"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.rentPerMonth))}
+            type="number"
+            label="€/month"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.address!.street))}
+            type="text"
+            label="Street"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.address!.city))}
+            type="text"
+            label="City"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.address!.zip))}
+            type="text"
+            label="Zip"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.address!.country))}
+            type="text"
+            label="Country"
+          />
+          <Div className="actions">
+            <Div className="btn" onClick={hideModal}>
+              Cancel
+            </Div>
+            <Separator direction={Direction.Vertical} />
+            <Div className="btn" onClick={saveChanges}>
+              Save
             </Div>
           </Div>
         </div>
-      </div>
-      <Text className="click-action-label" showIf={!editModalToggled}>
-        <PencilIcon />
-        click to edit
-      </Text>
-    </Card>
+      }
+      hoverContent={
+        <>
+          <PencilIcon />
+          click to edit
+        </>
+      }
+    />
   );
 }
 
@@ -167,11 +163,12 @@ const Stat = styled(Input)`
   }
 `;
 
-const Card = styled(Div)`
+const Card = styled(ExpandableModal)`
   background-color: ${p => p.theme.contentBackgroundColor};
   border-radius: 10px;
   box-shadow: ${p => p.theme.boxShadowSharp};
   position: relative;
+  padding: 0;
 
   &.clickable {
     cursor: pointer;
@@ -196,9 +193,18 @@ const Card = styled(Div)`
     top: 40%;
     transform: translate(-50%, -40%);
     max-height: 80vh;
-    overflow-y: scroll;
+    overflow-y: overlay;
 
-    .content {
+    ::-webkit-scrollbar-thumb {
+      background-color: ${p => p.theme.backgroundTextColor};
+      border: 6px solid transparent;
+
+      border-radius: 8px;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar {
+      width: 16px;
     }
 
     .content .text {
@@ -241,23 +247,25 @@ const Card = styled(Div)`
         border-bottom-right-radius: 0;
       }
 
-      .close-btn {
+      .actions {
         position: absolute;
-        width: 30px;
         top: 10px;
-        height: 30px;
         right: 10px;
-        fill: white;
+        display: flex;
+        flex-direction: row;
 
         svg {
-          fill: inherit;
+          width: 30px;
+          height: 30px;
+          fill: white;
           filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 1));
           cursor: pointer;
+          margin: 0 0.2em;
         }
       }
     }
 
-    .text {
+    .body {
       padding: 15px;
 
       .title {

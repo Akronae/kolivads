@@ -4,15 +4,16 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import { GlobalStyle } from '@/styles/global-styles';
 
-import { HomePage } from './pages/HomePage/Loadable';
-import { NotFoundPage } from './components/NotFoundPage/Loadable';
+import { HomePage } from '@/app/pages/HomePage/Loadable';
+import { NotFoundPage } from '@/app/components/NotFoundPage/Loadable';
 import { useTranslation } from 'react-i18next';
 import styled, { ThemeProvider } from 'styled-components';
 import { ThemeManager, ThemeProperties, ZIndex } from '@/styles/theme';
 import { useReducer } from 'react';
-import { Div } from './components/Div';
+import { Div } from '@/app/components/Div';
 import { isDarkTheme } from '@/utils/deviceUtils';
-import { AppManager } from './AppManager';
+import { AppManager } from '@/app/AppManager';
+import { ViewProperty } from '@/app/pages/ViewProperty/Loadable';
 
 declare module 'styled-components' {
   export interface DefaultTheme extends ThemeProperties {}
@@ -44,11 +45,12 @@ export function App(props: any) {
 
       <ThemeProvider theme={theme}>
         <Switch>
-          <Route exact path="/" component={HomePage} />
+          <Route path="/property/:id" component={ViewProperty} />
+          <Route path="/" component={HomePage} />
           <Route component={NotFoundPage} />
         </Switch>
         <GlobalStyle />
-        <AppShadow
+        <ModalShadow
           showIf={AppManager.showShadow}
           onClick={AppManager.showShadowOnClick}
         />
@@ -57,7 +59,7 @@ export function App(props: any) {
   );
 }
 
-const AppShadow = styled(Div)`
+const ModalShadow = styled(Div)`
   position: fixed;
   left: 0;
   top: 0;
@@ -65,7 +67,7 @@ const AppShadow = styled(Div)`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(3px);
-  z-index: ${ZIndex.AppShadow};
+  z-index: ${ZIndex.ModalShadow};
 
   :root {
     color-scheme: ${isDarkTheme() ? 'dark' : 'light'};

@@ -1,4 +1,3 @@
-import ArrayUtils from '@/utils/ArrayUtils';
 import { DefaultProps } from '@/utils/ReactUtils';
 import React, { ReactNode, useRef } from 'react';
 import styled from 'styled-components';
@@ -16,7 +15,7 @@ interface Props extends DefaultProps {
 function onInputChange(e: React.ChangeEvent<HTMLInputElement>, props: Props) {
   let val: any = e.target.value;
   if (props.type === 'number') val = parseFloat(val);
-  if (ArrayUtils.isNotEmpty(props.model)) props.model![1](val);
+  if (props.model) props.model.state = val;
 }
 
 export function Input(this: any, p: Props) {
@@ -48,7 +47,7 @@ export function Input(this: any, p: Props) {
         type={type}
         placeholder={placeholder}
         onChange={e => onInputChange(e, p)}
-        value={value || model?.[0]}
+        value={value || model?.state}
       ></input>
       {children}
     </InputWrapper>

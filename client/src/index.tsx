@@ -30,11 +30,11 @@ const apolloClient = new ApolloClient({
 ReactDOMClient.createRoot(MOUNT_NODE!).render(
   <Provider store={store}>
     <HelmetProvider>
-      <React.StrictMode>
+      {/* <React.StrictMode> */}
         <ApolloProvider client={apolloClient}>
           <App />
         </ApolloProvider>
-      </React.StrictMode>
+      {/* </React.StrictMode> */}
     </HelmetProvider>
   </Provider>,
 );

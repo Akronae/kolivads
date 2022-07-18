@@ -18,11 +18,12 @@ interface Props extends DefaultProps {}
  * ```
  */
 export function Div(p: Props) {
-  const { appearIff, children, showIf, model, ...passedProps } = p;
+  const { appearIf, children, showIf, model, ...passedProps } = p;
 
   if (showIf === false) return null;
-  if (appearIff === false) passedProps.className += ' opacity-0';
+  if (appearIf === false) passedProps.className += ' opacity-0';
   if (p.onClick) passedProps.className += ' clickable';
+  if (p.appearOnParentHover) passedProps.className += ' show-on-hover';
 
   return (
     <DivWrapper {...passedProps} title={p.tooltip}>
@@ -32,6 +33,15 @@ export function Div(p: Props) {
 }
 
 const DivWrapper = styled.div`
+  .show-on-hover {
+    opacity: 0;
+  }
+  &:hover {
+    .show-on-hover {
+      opacity: 1;
+    }
+  }
+
   &.opacity-0 {
     opacity: 0;
   }

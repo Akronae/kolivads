@@ -9,15 +9,15 @@ import {
 } from '@/app/components/PropertyCard';
 import { Config } from '@/config';
 import { NavBar } from '@/app/components/NavBar';
-import { useState } from 'react';
-import { useSingleQuery } from '@/utils/ReactUtils';
+import { useSingleQuery, useState } from '@/utils/ReactUtils';
 import { Text } from '@/app/components/Text';
 import { SearchBar } from '@/app/components/SearchBar';
 import { devices } from '@/utils/deviceUtils';
 
 export function HomePage() {
-  const [searchText, setSearchText] = useState('');
-  const { data, refetch } = useSingleQuery(
+  const shouldWait = useState(true);
+  const searchText = useState('');
+  let { data, refetch } = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
       .select(s => s.id)
       .select(s => s.title)
@@ -60,6 +60,11 @@ export function HomePage() {
     await refetch();
   };
 
+  // used as a loading screen, making sure CSS transitions are applied
+  setTimeout(() => {
+    shouldWait.state = false;
+  }, 1500);
+
   return (
     <>
       <Helmet>
@@ -67,14 +72,14 @@ export function HomePage() {
         <meta name="description" content={`${Config.projectName} dashboard`} />
       </Helmet>
       <NavBar>
-        <SearchBar model={[searchText, setSearchText]} />
+        <SearchBar model={searchText} />
       </NavBar>
       <BodyContent>
-        <SearchInfo appearIff={searchText.length > 0}>
-          Results for « {searchText} »
+        <SearchInfo appearIf={searchText.state.length > 0}>
+          Results for « {searchText.state} »
         </SearchInfo>
         <ProperiesWrapper>
-          {!data &&
+          {(!data || shouldWait.state) &&
             [...Array(10)].map((_, i) => <PropertyCardLoadSkeleton key={i} />)}
           {data &&
             data.map(p => {
@@ -84,8 +89,8 @@ export function HomePage() {
                   property={p}
                   className="property-card"
                   showIf={
-                    p.title?.includes(searchText) ||
-                    p.description?.includes(searchText)
+                    p.title?.includes(searchText.state) ||
+                    p.description?.includes(searchText.state)
                   }
                   onPropertyUpdate={onPropertyUpdate}
                 />

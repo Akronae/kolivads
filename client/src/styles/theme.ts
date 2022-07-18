@@ -2,8 +2,9 @@ import { DeviceType, getDeviceType, isDarkTheme } from '@/utils/deviceUtils';
 import React from 'react';
 
 export enum ZIndex {
-  NavBar = 1,
-  AppShadow,
+  Regular,
+  NavBar,
+  ModalShadow,
   Modal,
 }
 
