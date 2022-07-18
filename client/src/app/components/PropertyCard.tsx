@@ -5,14 +5,13 @@ import { Text } from '@/app/components/Text';
 import { Direction, Separator } from '@/app/components/Separator';
 import { ExpandableModal } from '@/app/components/ExpandableModal';
 import { Div } from './Div';
-import { ThemeManager, ZIndex } from '@/styles/theme';
+import { ThemeManager } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
 import { LocationPinIcon, PencilIcon, ShareIcon } from '@/app/components/icons';
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
 import areEqual from 'fast-deep-equal';
-import { useHistory } from 'react-router-dom';
 
 export interface Props extends DefaultProps {
   property: Property;
@@ -27,7 +26,6 @@ export function PropertyCard(p: Props) {
   );
   const [propState, setPropState] = useState(ObjectUtils.clone(property));
   const modalToggled = useState(false);
-  const history = useHistory();
 
   if (!areEqual(originalPropState, property)) {
     setOriginalPropState(ObjectUtils.clone(property));
@@ -73,7 +71,7 @@ export function PropertyCard(p: Props) {
       }
       topActions={
         <Div
-          onClick={() => history.push('/property/' + propState.id)}
+          onClick={() => window.open('/property/' + propState.id, '_blank')}
           tooltip="view more"
           appearOnParentHover={true}
         >
@@ -164,73 +162,7 @@ const Stat = styled(Input)`
 `;
 
 const Card = styled(ExpandableModal)`
-  background-color: ${p => p.theme.contentBackgroundColor};
-  border-radius: 10px;
-  box-shadow: ${p => p.theme.boxShadowSharp};
-  position: relative;
   padding: 0;
-
-  &.clickable {
-    cursor: pointer;
-
-    &:hover {
-      .click-action-label {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-      }
-      .content {
-        filter: brightness(60%);
-      }
-    }
-  }
-
-  &.edit-modal-toggled {
-    position: fixed;
-    z-index: ${ZIndex.Modal};
-    max-width: 45em;
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -40%);
-    max-height: 80vh;
-    overflow-y: overlay;
-
-    ::-webkit-scrollbar-thumb {
-      background-color: ${p => p.theme.backgroundTextColor};
-      border: 6px solid transparent;
-
-      border-radius: 8px;
-      background-clip: padding-box;
-    }
-
-    ::-webkit-scrollbar {
-      width: 16px;
-    }
-
-    .content .text {
-      padding: 30px;
-      padding-bottom: 15px;
-    }
-  }
-
-  .click-action-label {
-    display: none;
-    position: absolute;
-    top: 0;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: white;
-    text-shadow: ${p => p.theme.textShadow};
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -40%);
-
-    svg {
-      width: 1.5em;
-      height: 1.5em;
-      margin-bottom: 0.5em;
-    }
-  }
 
   .content {
     border-radius: inherit;
@@ -245,23 +177,6 @@ const Card = styled(ExpandableModal)`
         border-radius: inherit;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
-      }
-
-      .actions {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        flex-direction: row;
-
-        svg {
-          width: 30px;
-          height: 30px;
-          fill: white;
-          filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 1));
-          cursor: pointer;
-          margin: 0 0.2em;
-        }
       }
     }
 
