@@ -1,5 +1,12 @@
 import { Property, PropertyOperation } from '@/types/Property';
-import { DefaultProps, takeSubState, useState } from '@/utils/ReactUtils';
+import {
+  DefaultProps,
+  ReactiveState,
+  takeSubState,
+  useSingleQuery,
+  useState,
+  useStateIfDefined,
+} from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Text } from '@/app/components/Text';
 import { Direction, Separator } from '@/app/components/Separator';
@@ -19,39 +26,70 @@ export interface Props extends DefaultProps {
   property: Property;
   onPropertyUpdate?: (property: Property) => void;
   expandInPlace?: boolean;
+  toggleModal?: ReactiveState<boolean>;
 }
 
 export function PropertyCard(p: Props) {
-  let { property, onPropertyUpdate, expandInPlace, ...passedProps } = p;
+  let {
+    property,
+    onPropertyUpdate,
+    expandInPlace,
+    toggleModal,
+    ...passedProps
+  } = p;
 
-  const [savePropertyChanges] = useMutation(
+  const landlordsQuery = useSingleQuery(
+    new GqlBuilder<Property>(PropertyOperation.Get)
+      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
+      .select(p => p.landlord),
+  );
+  const [updateProperty] = useMutation(
     new GqlBuilder<Property>(PropertyOperation.Update, RequestType.Mutation)
       .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
       .addArgument('update', new GqlVariable('update', 'PropertyUpdateInput'))
       .build(),
   );
+  const [createProperty] = useMutation(
+    new GqlBuilder<Property>(PropertyOperation.Create, RequestType.Mutation)
+      .addArgument('data', new GqlVariable('data', 'PropertyCreateInput!'))
+      .select(p => p.id)
+      .build(),
+  );
   const saveChanges = async () => {
-    await savePropertyChanges({
-      variables: {
-        filter: { id: propState.id },
-        update: {
-          title: propState.title,
-          description: propState.description,
-          floor: propState.floor,
-          nbRooms: propState.nbRooms,
-          surface: propState.surface,
-          rentPerMonth: propState.rentPerMonth,
-          address: {
-            city: propState.address!.city,
-            street: propState.address!.street,
-            zip: propState.address!.zip,
-            country: propState.address!.country,
-          },
-        },
+    const update = {
+      title: propState.title,
+      description: propState.description,
+      floor: propState.floor,
+      nbRooms: propState.nbRooms,
+      surface: propState.surface,
+      rentPerMonth: propState.rentPerMonth,
+      landlord: propState.landlord,
+      address: {
+        city: propState.address!.city,
+        street: propState.address!.street,
+        zip: propState.address!.zip,
+        country: propState.address!.country,
       },
-    });
-    setOriginalPropState(propState);
-    onPropertyUpdate?.(propState);
+    };
+    var updated: Property | null = null;
+
+    if (propState.id < 0) {
+      const p = (await createProperty({ variables: { data: update } }))?.data?.[
+        PropertyOperation.Create
+      ];
+      updated = p;
+    } else {
+      await updateProperty({
+        variables: {
+          filter: { id: propState.id },
+          update,
+        },
+      });
+      updated = propState;
+    }
+
+    setOriginalPropState(updated!);
+    onPropertyUpdate?.(updated!);
     hideModal();
   };
 
@@ -59,9 +97,9 @@ export function PropertyCard(p: Props) {
     ObjectUtils.clone(property),
   );
   const [propState, setPropState] = useState(ObjectUtils.clone(property));
-  const modalToggled = useState(false);
+  const modalToggled = useStateIfDefined(toggleModal, false);
 
-  if (!areEqual(originalPropState, property)) {
+  if (JSON.stringify(originalPropState) !== JSON.stringify(property)) {
     setOriginalPropState(ObjectUtils.clone(property));
     setPropState(ObjectUtils.clone(property));
   }
@@ -80,10 +118,12 @@ export function PropertyCard(p: Props) {
       expandInPlace={expandInPlace}
       previewContent={
         <>
-          <img
-            src={`/property-previews/${(propState.id % 9) + 1}.jpg`}
-            alt="property preview"
-          />
+          {property.id >= 0 && (
+            <img
+              src={`/property-previews/${(propState.id % 9) + 1}.jpg`}
+              alt="property preview"
+            />
+          )}
           <div className="body">
             <div className="title">{propState.title}</div>
             <Text className="address" leftIcon={<LocationPinIcon />}>
@@ -103,7 +143,7 @@ export function PropertyCard(p: Props) {
         <Div
           onClick={() => window.open('/property/' + propState.id, '_blank')}
           tooltip="view more"
-          showIf={modalToggled.state && !expandInPlace}
+          showIf={modalToggled.state && !expandInPlace && property.id >= 0}
         >
           <ShareIcon />
         </Div>
@@ -140,6 +180,12 @@ export function PropertyCard(p: Props) {
             model={modelOf(nameof.full<Property>(p => p.rentPerMonth))}
             type="number"
             label="€/month"
+          />
+          <Stat
+            model={modelOf(nameof.full<Property>(p => p.landlord))}
+            type="text"
+            label="landlord"
+            suggestions={landlordsQuery.data?.map(p => p.landlord)}
           />
           <Stat
             model={modelOf(nameof.full<Property>(p => p.address!.street))}

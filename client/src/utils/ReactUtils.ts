@@ -134,3 +134,29 @@ export function useOnUnmount(fn: () => void) {
     };
   }, [fn]);
 }
+
+/**
+ * Hook that alerts clicks outside of the passed ref
+ * taken from: https://stackoverflow.com/questions/52795241/how-to-detect-click-outside-of-react-component
+ */
+export function useClickOutsideAlerter(
+  ref: React.RefObject<HTMLElement>,
+  callback: () => void,
+) {
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
+      }
+    }
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref, callback]);
+}

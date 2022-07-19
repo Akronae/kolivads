@@ -46,12 +46,10 @@ export function ExpandableModal(p: Props) {
 
   var onElemClick: (() => void) | undefined = showModal;
 
-  useEffect(() => {
-    if (expandInPlace) {
-      editModalToggled.state = true;
-      passedProps.className += ' expand-in-place';
-    }
-  }, [editModalToggled, passedProps, expandInPlace]);
+  if (expandInPlace) {
+    editModalToggled.state = true;
+    passedProps.className += ' expand-in-place';
+  }
 
   if (editModalToggled.state) {
     passedProps.className += ' edit-modal-toggled';
@@ -109,7 +107,7 @@ const ExpandableModalWrapper = styled(Div)`
         }
       }
       .content {
-        filter: brightness(60%);
+        filter: brightness(50%);
       }
     }
   }
