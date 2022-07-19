@@ -10,13 +10,16 @@ import { Div } from '@/app/components/Div';
 interface Props extends DefaultProps {
   limit?: number;
   leftIcon?: ReactNode;
+  center?: { vertical?: boolean; horizontal?: boolean };
 }
 
 export function Text(p: Props) {
   const [show, setShow] = useState(false);
 
-  var { limit, leftIcon, children, ...passedProps } = p;
+  var { limit, leftIcon, children, center, ...passedProps } = p;
   passedProps.className += ' Text';
+  if (center?.horizontal) passedProps.className += ' center-horizontal';
+  if (center?.vertical) passedProps.className += ' center-vertical';
 
   limit = limit || Infinity;
   const childrenStr = getNodeText(children);
@@ -40,6 +43,18 @@ export function Text(p: Props) {
 }
 
 const TextWrapper = styled(Div)`
+  .content {
+    display: flex;
+    flex-direction: column;
+
+    &.center-horizontal {
+      align-items: center;
+    }
+    &.center-vertical {
+      justify-content: center;
+    }
+  }
+
   svg {
     width: 1em;
     height: 1em;
@@ -47,7 +62,7 @@ const TextWrapper = styled(Div)`
   }
 `;
 
-const TextButton = styled.button`
+const TextButton = styled.div`
   background: transparent;
   color: inherit;
   border: none;
@@ -55,4 +70,5 @@ const TextButton = styled.button`
   cursor: pointer;
   opacity: 0.6;
   font-weight: bold;
+  text-align: left;
 `;

@@ -8,19 +8,15 @@ import { Service } from "typedi";
 export default class PropertyService {
   constructor(private readonly propertyModel: PropertyModel) {}
 
-  public async getAll(): Promise<Array<Property>> {
-    return this.propertyModel.getAll();
-  }
-
-  public async getProperties(filter: PropertyFilterInput): Promise<Property[]> {
-    return this.propertyModel.getProperties(filter);
+  public async get(filter: PropertyFilterInput): Promise<Property[]> {
+    return this.propertyModel.get(filter);
   }
 
   public async getById(_id: ObjectId): Promise<Property | null> {
     return this.propertyModel.getById(_id);
   }
 
-  public async addProperties(data: PropertyCreateInput[]): Promise<Property[]> {
+  public async add(data: PropertyCreateInput[]): Promise<Property[]> {
     const newProperties = [];
 
     for (const property of data) {
@@ -34,7 +30,7 @@ export default class PropertyService {
     return await this.propertyModel.update(filter, update);
   }
 
-  public async deleteAll(filter: PropertyFilterInput): Promise<number> {
-    return await this.propertyModel.deleteAll(filter);
+  public async delete(filter: PropertyFilterInput): Promise<number> {
+    return await this.propertyModel.delete(filter);
   }
 }

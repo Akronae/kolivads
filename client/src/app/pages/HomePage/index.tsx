@@ -27,6 +27,8 @@ import {
   getRandomPropertyTemplate,
   PropertyUpdateInput,
 } from '@/services/property';
+import { BackgroundIllustration } from '@/app/components/BackgroundIllustration';
+import { FixedButton } from '@/app/components/FixedButton';
 
 export function HomePage() {
   const shouldWait = useState(true);
@@ -91,14 +93,15 @@ export function HomePage() {
         <SearchInfo appearIf={searchText.state.length > 0}>
           Results for « {searchText.state} »
         </SearchInfo>
-        <AddNewProperty onClick={createNewProperty}>
-          <PlusIcon />
-        </AddNewProperty>
+        <FixedButton onClick={createNewProperty} />
         {ArrayUtils.isEmpty(data) && !shouldWait.state && (
-          <BackgroundIllustration>
-            <TextIllusatration className="illustration" />
-            <Text>No properties found. Would you like to generate some ?</Text>
-            <Button type="light" onClick={generateRandomProperties}>Generate random properties</Button>
+          <BackgroundIllustration
+            illustration={<TextIllusatration />}
+            text="No properties found. Would you like to generate some ?"
+          >
+            <Button type="light" onClick={generateRandomProperties}>
+              Generate random properties
+            </Button>
           </BackgroundIllustration>
         )}
         {toggleNewPropModal.state && (
@@ -112,52 +115,27 @@ export function HomePage() {
           {(!data || shouldWait.state) &&
             [...Array(10)].map((_, i) => <PropertyCardLoadSkeleton key={i} />)}
           {data &&
-            data.map(p => {
-              return (
-                <PropertyCard
-                  key={p.id}
-                  property={p}
-                  className="property-card"
-                  showIf={
-                    p.title?.includes(searchText.state) ||
-                    p.description?.includes(searchText.state)
-                  }
-                  onPropertyUpdate={onPropertyUpdate}
-                />
-              );
-            })}
+            data
+              .map(p => {
+                return (
+                  <PropertyCard
+                    key={p.id}
+                    property={p}
+                    className="property-card"
+                    showIf={
+                      p.title?.includes(searchText.state) ||
+                      p.description?.includes(searchText.state)
+                    }
+                    onPropertyUpdate={onPropertyUpdate}
+                  />
+                );
+              })
+              .reverse()}
         </ProperiesWrapper>
       </BodyContent>
     </>
   );
 }
-
-const BackgroundIllustration = styled(Div)`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .illustration {
-    filter: ${p => p.theme.backgroundImageFilter};
-    width: 10em;
-    height: 10em;
-  }
-
-  .Text {
-    margin-top: 5em;
-    font-size: 1.2em;
-    color: ${p => p.theme.backgroundTextColorHeavy};
-  }
-
-  .Button {
-    margin-top: 2em;
-  }
-`;
 
 const BodyContent = styled.div`
   padding: calc(${p => p.theme.navBarHeight} + 2em) ${p => p.theme.appPadding};
@@ -191,22 +169,5 @@ const ProperiesWrapper = styled.div`
 
   .property-card {
     width: 100%;
-  }
-`;
-
-const AddNewProperty = styled(Div)`
-  width: 3em;
-  height: 3em;
-  background-color: ${p => p.theme.accentColor};
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  position: fixed;
-  right: 30px;
-  bottom: 30px;
-  box-shadow: ${p => p.theme.boxShadowDiffuse};
-
-  svg {
-    fill: ${p => p.theme.contentBackgroundColor};
   }
 `;

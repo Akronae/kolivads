@@ -101,7 +101,7 @@ export function getRandomPropertyTemplate(): PropertyUpdateInput {
     floor: Math.round(1 + Math.random() * 10),
     nbRooms: Math.round(1 + Math.random() * 5),
     surface: Math.round(1 + Math.random() * 100),
-    rentPerMonth: Math.round(1 + Math.random() * 5000),
+    rentPerMonth: Math.round(Math.random() * 5000),
     landlord:
       ArrayUtils.getRandomElement([
         'Laurent',

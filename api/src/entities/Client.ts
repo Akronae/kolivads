@@ -1,11 +1,12 @@
 import { Address } from "@/entities/Address";
 import { AutoIncrementID } from "@typegoose/auto-increment";
 import { plugin, prop } from "@typegoose/typegoose";
+import { IsEmail, IsPhoneNumber } from "class-validator";
 import { Field, ObjectType } from "type-graphql";
 
 @plugin(AutoIncrementID)
 @ObjectType()
-export class Property {
+export class Client {
   // default MongoDB ID field, cannot be changed.
   @prop()
   readonly _id!: number;
@@ -17,50 +18,20 @@ export class Property {
   }
 
   @prop()
-  @Field(() => Date)
-  createdAt!: Date;
-
-  @prop()
-  @Field(() => Date)
-  updatedAt!: Date;
+  @Field()
+  firstName!: string;
 
   @prop()
   @Field()
-  landLord!: string;
-
-  @prop({ min: 0 })
-  @Field()
-  floor!: number;
-
-  @prop({ min: 1 })
-  @Field()
-  surface!: number;
-
-  @prop({ trim: true })
-  @Field()
-  description!: string;
-
-  @prop({ trim: true })
-  @Field()
-  title!: string;
-
-  @prop()
-  @Field((type) => Address)
-  address!: Address;
-
-  @prop({ min: 1 })
-  @Field()
-  rentPerMonth: number;
-
-  @prop({ min: 1 })
-  @Field()
-  nbRooms: number;
+  lastName!: string;
 
   @prop()
   @Field()
-  isReserved!: boolean;
+  @IsEmail()
+  email!: string;
 
   @prop()
-  @Field({ nullable: true })
-  reservedBy?: string;
+  @Field()
+  @IsPhoneNumber('FR')
+  phone!: string;
 }

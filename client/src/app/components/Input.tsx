@@ -1,7 +1,6 @@
 import ArrayUtils from '@/utils/ArrayUtils';
 import {
   DefaultProps,
-  useClickOutsideAlerter,
   useState,
   useStateIfDefined,
 } from '@/utils/ReactUtils';
@@ -42,6 +41,8 @@ export function Input(this: any, p: Props) {
   } = p;
   const inputValue = useStateIfDefined(model, value || '');
 
+  passedProps.className += ' Input';
+
   if (
     !showSuggestions.state &&
     document.activeElement === inputRef.current &&
@@ -77,8 +78,6 @@ export function Input(this: any, p: Props) {
       showSuggestions.state = false;
     }
   };
-
-  passedProps.className += ' row';
 
   return (
     <InputWrapper
@@ -133,6 +132,8 @@ const InputWrapper = styled(Div)`
   width: fit-content;
   align-items: center;
   cursor: text;
+  display: flex;
+  flex-direction: row;
 
   &:focus-within {
     border-color: ${p => p.theme.accentColor};

@@ -131,16 +131,15 @@ export function useState<T>(data: T) {
  * Creates a reactive state based on a child of an object.
  * i.e. turns `setState({...state, key: value})` into `setKeyState(value)`.
  */
-export function takeSubState(
+export function takeSubState<T extends object>(
   key: string,
-  obj: any,
-  setter: Dispatch<SetStateAction<any>>,
+  reactState: ReactiveState<T>,
 ): ReactiveState<any> {
   return new ReactiveState(
-    ObjectUtils.get(obj, key),
+    ObjectUtils.get(reactState.state, key),
     (val: SetStateAction<any>) => {
-      ObjectUtils.set(obj, key, val);
-      setter({ ...obj });
+      ObjectUtils.set(reactState.state, key, val);
+      reactState.state = { ...reactState.state };
     },
   );
 }
@@ -150,11 +149,16 @@ export function takeSubState(
  * Useful for optional models. (Reactive state from parent passed to child as props, to control its behavior, but that may remain optional.)
  */
 export function useStateIfDefined<T>(
-  model: ReactiveState<T> | undefined,
+  model: ReactiveState<T> | T | undefined,
   fallbackValue: T,
 ): ReactiveState<T> {
+  // if model is T instead of ReactiveState<T>
+  if (model && model instanceof ReactiveState === false) {
+    fallbackValue = model as T;
+    model = undefined;
+  }
   const fallbackReactiveState = useState(fallbackValue);
-  return model || fallbackReactiveState;
+  return (model as ReactiveState<T>) || fallbackReactiveState;
 }
 
 export function useOnUnmount(fn: () => void) {

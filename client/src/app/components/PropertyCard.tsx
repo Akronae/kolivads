@@ -52,7 +52,7 @@ export function PropertyCard(p: Props) {
   const [originalPropState, setOriginalPropState] = useState(
     ObjectUtils.clone(property),
   );
-  const [propState, setPropState] = useState(ObjectUtils.clone(property));
+  const propState = useState(ObjectUtils.clone(property));
   const modalToggled = useStateIfDefined(toggleModal, false);
   const history = useHistory();
 
@@ -67,32 +67,32 @@ export function PropertyCard(p: Props) {
 
   const saveChanges = async () => {
     const update = {
-      title: propState.title,
-      description: propState.description,
-      floor: propState.floor,
-      nbRooms: propState.nbRooms,
-      surface: propState.surface,
-      rentPerMonth: propState.rentPerMonth,
-      landlord: propState.landlord,
+      title: propState.state.title,
+      description: propState.state.description,
+      floor: propState.state.floor,
+      nbRooms: propState.state.nbRooms,
+      surface: propState.state.surface,
+      rentPerMonth: propState.state.rentPerMonth,
+      landlord: propState.state.landlord,
       address: {
-        city: propState.address!.city,
-        street: propState.address!.street,
-        zip: propState.address!.zip,
-        country: propState.address!.country,
+        city: propState.state.address!.city,
+        street: propState.state.address!.street,
+        zip: propState.state.address!.zip,
+        country: propState.state.address!.country,
       },
     };
     var updated: Property | null = null;
 
-    if (propState.id < 0) {
+    if (propState.state.id < 0) {
       updated = (await createProperties({ variables: { data: [update] } }))[0];
     } else {
       await updateProperty({
         variables: {
-          filter: { id: propState.id },
+          filter: { id: propState.state.id },
           update,
         },
       });
-      updated = propState;
+      updated = propState.state;
     }
 
     setOriginalPropState(updated!);
@@ -101,7 +101,9 @@ export function PropertyCard(p: Props) {
   };
 
   const deleteCurrentProperty = async () => {
-    await deleteProperties({ variables: { filter: { id: propState.id } } });
+    await deleteProperties({
+      variables: { filter: { id: propState.state.id } },
+    });
     hideModal();
     onPropertyUpdate?.(null);
     history.push('/');
@@ -109,14 +111,14 @@ export function PropertyCard(p: Props) {
 
   const hideModal = () => {
     modalToggled.state = false;
-    setPropState(ObjectUtils.clone(originalPropState));
+    propState.state = ObjectUtils.clone(originalPropState);
   };
 
-  const modelOf = (key: string) => takeSubState(key, propState, setPropState);
+  const modelOf = (key: string) => takeSubState(key, propState);
 
   if (JSON.stringify(originalPropState) !== JSON.stringify(property)) {
     setOriginalPropState(ObjectUtils.clone(property));
-    setPropState(ObjectUtils.clone(property));
+    propState.state = ObjectUtils.clone(property);
   }
 
   return (
@@ -128,21 +130,22 @@ export function PropertyCard(p: Props) {
         <>
           {property.id >= 0 && (
             <img
-              src={`/property-previews/${(propState.id % 9) + 1}.jpg`}
+              src={`/property-previews/${(propState.state.id % 9) + 1}.jpg`}
               alt="property preview"
             />
           )}
           <div className="body">
-            <div className="title">{propState.title}</div>
+            <div className="title">{propState.state.title}</div>
             <Text className="address" leftIcon={<LocationPinIcon />}>
-              {propState.address?.city}, {propState.address?.street}
+              {propState.state.address?.city}, {propState.state.address?.street}
             </Text>
             <Text className="summup">
-              {propState.nbRooms} rooms for {propState.surface}m² at floor{' '}
-              {propState.floor} for {propState.rentPerMonth}€/month
+              {propState.state.nbRooms} rooms for {propState.state.surface}m² at
+              floor {propState.state.floor} for {propState.state.rentPerMonth}
+              €/month
             </Text>
             <Text className="description" limit={100}>
-              {propState.description}
+              {propState.state.description}
             </Text>
           </div>
         </>
@@ -157,7 +160,9 @@ export function PropertyCard(p: Props) {
             <TrashIcon />
           </Div>
           <Div
-            onClick={() => window.open('/property/' + propState.id, '_blank')}
+            onClick={() =>
+              window.open('/property/' + propState.state.id, '_blank')
+            }
             tooltip="view more"
             showIf={modalToggled.state && !expandInPlace && property.id >= 0}
           >
@@ -239,7 +244,9 @@ export function PropertyCard(p: Props) {
         <>
           <Div
             className="column center"
-            onClick={() => window.open('/property/' + propState.id, '_blank')}
+            onClick={() =>
+              window.open('/property/' + propState.state.id, '_blank')
+            }
           >
             <ShareIcon />
             view more

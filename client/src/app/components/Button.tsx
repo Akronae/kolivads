@@ -16,6 +16,9 @@ export function Button(p: Props) {
 }
 
 const ButtonWrapper = styled(Div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: none;
   border-radius: 8px;
   padding: 0.7em 1em;

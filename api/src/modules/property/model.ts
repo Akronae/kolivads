@@ -7,11 +7,7 @@ import { PropertyCreateInput, PropertyFilterInput, PropertyUpdateInput } from "@
 export const PropertyMongooseModel = getModelForClass(Property);
 
 export default class PropertyModel {
-  async getAll(): Promise<Array<Property>> {
-    return PropertyMongooseModel.find().lean().exec();
-  }
-
-  async getProperties(filter: PropertyFilterInput): Promise<Array<Property>> {
+  async get(filter: PropertyFilterInput): Promise<Array<Property>> {
     return PropertyMongooseModel.find(filter).lean().exec();
   }
 
@@ -30,7 +26,7 @@ export default class PropertyModel {
     return (await PropertyMongooseModel.updateMany(filter, update).lean().exec()).n || 0;
   }
 
-  async deleteAll(filter: PropertyFilterInput): Promise<number> {
+  async delete(filter: PropertyFilterInput): Promise<number> {
     return (await PropertyMongooseModel.deleteMany(filter).lean().exec()).n || 0;
   }
 }

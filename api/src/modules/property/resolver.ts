@@ -13,14 +13,14 @@ export default class PropertyResolver {
   async getProperties(
     @Arg("filter", { nullable: true }) filter: PropertyFilterInput
   ) {
-    return await this.propertyService.getProperties(filter);
+    return await this.propertyService.get(filter);
   }
 
   @Mutation((returns) => [Property])
   async createProperties(
     @Arg("data", type => [PropertyCreateInput]) data: PropertyCreateInput[]
   ): Promise<Property[]> {
-    return await this.propertyService.addProperties(data);
+    return await this.propertyService.add(data);
   }
 
   @Mutation((returns) => Number)
@@ -35,6 +35,6 @@ export default class PropertyResolver {
   async deleteProperties(
     @Arg("filter", { nullable: true }) filter: PropertyFilterInput
   ): Promise<number> {
-    return await this.propertyService.deleteAll(filter);
+    return await this.propertyService.delete(filter);
   }
 }
