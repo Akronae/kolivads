@@ -6,7 +6,7 @@ import {
 import styled from 'styled-components';
 import { Div } from './Div';
 import { ZIndex } from '@/styles/theme';
-import { CrossIcon } from '@/app/components/icons';
+import { CrossIcon } from '@/app/components/assets';
 import { ReactNode, useEffect } from 'react';
 
 export interface Props extends DefaultProps {

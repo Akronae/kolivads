@@ -14,17 +14,27 @@ import { ExpandableModal } from '@/app/components/ExpandableModal';
 import { Div } from './Div';
 import { ThemeManager } from '@/styles/theme';
 import ContentLoader from 'react-content-loader';
-import { LocationPinIcon, PencilIcon, ShareIcon } from '@/app/components/icons';
+import {
+  LocationPinIcon,
+  PencilIcon,
+  ShareIcon,
+  TrashIcon,
+} from '@/app/components/assets';
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
-import areEqual from 'fast-deep-equal';
 import { useMutation } from '@apollo/client';
 import GqlBuilder, { GqlVariable, RequestType } from '@/utils/GqlBuilder';
+import { useHistory } from 'react-router-dom';
+import {
+  createPropertiesQuery,
+  deletePropertiesQuery,
+  updatePropertiesQuery,
+} from '@/services/property';
 
 export interface Props extends DefaultProps {
   property: Property;
-  onPropertyUpdate?: (property: Property) => void;
+  onPropertyUpdate?: (property: Property | null) => void;
   expandInPlace?: boolean;
   toggleModal?: ReactiveState<boolean>;
 }
@@ -38,23 +48,22 @@ export function PropertyCard(p: Props) {
     ...passedProps
   } = p;
 
+  const [originalPropState, setOriginalPropState] = useState(
+    ObjectUtils.clone(property),
+  );
+  const [propState, setPropState] = useState(ObjectUtils.clone(property));
+  const modalToggled = useStateIfDefined(toggleModal, false);
+  const history = useHistory();
+
   const landlordsQuery = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
       .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
       .select(p => p.landlord),
   );
-  const [updateProperty] = useMutation(
-    new GqlBuilder<Property>(PropertyOperation.Update, RequestType.Mutation)
-      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
-      .addArgument('update', new GqlVariable('update', 'PropertyUpdateInput'))
-      .build(),
-  );
-  const [createProperty] = useMutation(
-    new GqlBuilder<Property>(PropertyOperation.Create, RequestType.Mutation)
-      .addArgument('data', new GqlVariable('data', 'PropertyCreateInput!'))
-      .select(p => p.id)
-      .build(),
-  );
+  const [updateProperty] = useMutation(updatePropertiesQuery);
+  const [createProperty] = useMutation(createPropertiesQuery);
+  const [deleteProperties] = useMutation(deletePropertiesQuery);
+
   const saveChanges = async () => {
     const update = {
       title: propState.title,
@@ -93,16 +102,12 @@ export function PropertyCard(p: Props) {
     hideModal();
   };
 
-  const [originalPropState, setOriginalPropState] = useState(
-    ObjectUtils.clone(property),
-  );
-  const [propState, setPropState] = useState(ObjectUtils.clone(property));
-  const modalToggled = useStateIfDefined(toggleModal, false);
-
-  if (JSON.stringify(originalPropState) !== JSON.stringify(property)) {
-    setOriginalPropState(ObjectUtils.clone(property));
-    setPropState(ObjectUtils.clone(property));
-  }
+  const deleteCurrentProperty = async () => {
+    await deleteProperties({ variables: { filter: { id: propState.id } } });
+    hideModal();
+    onPropertyUpdate?.(null);
+    history.push('/');
+  };
 
   const hideModal = () => {
     modalToggled.state = false;
@@ -110,6 +115,11 @@ export function PropertyCard(p: Props) {
   };
 
   const modelOf = (key: string) => takeSubState(key, propState, setPropState);
+
+  if (JSON.stringify(originalPropState) !== JSON.stringify(property)) {
+    setOriginalPropState(ObjectUtils.clone(property));
+    setPropState(ObjectUtils.clone(property));
+  }
 
   return (
     <Card
@@ -140,13 +150,22 @@ export function PropertyCard(p: Props) {
         </>
       }
       topActions={
-        <Div
-          onClick={() => window.open('/property/' + propState.id, '_blank')}
-          tooltip="view more"
-          showIf={modalToggled.state && !expandInPlace && property.id >= 0}
-        >
-          <ShareIcon />
-        </Div>
+        <>
+          <Div
+            onClick={deleteCurrentProperty}
+            tooltip="delete property"
+            showIf={modalToggled.state && property.id >= 0}
+          >
+            <TrashIcon />
+          </Div>
+          <Div
+            onClick={() => window.open('/property/' + propState.id, '_blank')}
+            tooltip="view more"
+            showIf={modalToggled.state && !expandInPlace && property.id >= 0}
+          >
+            <ShareIcon />
+          </Div>
+        </>
       }
       modalContent={
         <div className="body">

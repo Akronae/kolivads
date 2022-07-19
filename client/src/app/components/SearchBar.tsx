@@ -1,6 +1,6 @@
 import { DefaultProps } from '@/utils/ReactUtils';
 import styled from 'styled-components';
-import { MagnifierIcon } from '@/app/components/icons';
+import { MagnifierIcon } from '@/app/components/assets';
 import { Input } from '@/app/components/Input';
 import { devices, matchesMedia } from '@/utils/deviceUtils';
 

@@ -1,3 +1,4 @@
+import { shadeColor } from '@/utils/colorUtils';
 import { DeviceType, getDeviceType, isDarkTheme } from '@/utils/deviceUtils';
 import React from 'react';
 
@@ -56,6 +57,9 @@ export class ThemeProperties {
   get selectionColor(): string {
     return this.accentColor + '40';
   }
+  get accentColorLight(): string {
+    return shadeColor(this.accentColor, 20);
+  }
 }
 
 export const lightTheme = new ThemeProperties();
@@ -110,7 +114,7 @@ darkTheme.backgroundTextColorHeavy = '#ffffff4d';
 darkTheme.backgroundTextColorExtraLight = 'rgba(0, 0, 0, 0.1)';
 darkTheme.searchBarGrayBackground = 'rgba(43, 43, 43, .30)';
 darkTheme.invert = 'invert(0.82)';
-darkTheme.backgroundImageFilter = 'grayscale(1)';
+darkTheme.backgroundImageFilter = 'grayscale(1) brightness(0.6)';
 darkTheme.borderColor = '#383838';
 darkTheme.borderColorStrong = '#e0e0e157';
 darkTheme.borderColorExtraStrong = '#636363';

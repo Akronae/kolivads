@@ -16,6 +16,8 @@ export function Text(p: Props) {
   const [show, setShow] = useState(false);
 
   var { limit, leftIcon, children, ...passedProps } = p;
+  passedProps.className += ' Text';
+
   limit = limit || Infinity;
   const childrenStr = getNodeText(children);
   const isTextTruncated = childrenStr.length > limit && !show;

@@ -9,7 +9,7 @@ export function Blank(p: Props) {
 
   passedProps.className += ' Blank';
 
-  return <BlankWrapper {...p}></BlankWrapper>;
+  return <BlankWrapper {...passedProps}></BlankWrapper>;
 }
 
 const BlankWrapper = styled(Div)`

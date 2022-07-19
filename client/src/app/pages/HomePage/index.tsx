@@ -1,6 +1,5 @@
 import { Property, PropertyOperation } from '@/types/Property';
-import GqlBuilder, { GqlVariable, RequestType } from '@/utils/GqlBuilder';
-import { useMutation } from '@apollo/client';
+import GqlBuilder from '@/utils/GqlBuilder';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 import {
@@ -9,32 +8,21 @@ import {
 } from '@/app/components/PropertyCard';
 import { Config } from '@/config';
 import { NavBar } from '@/app/components/NavBar';
-import { ReactiveState, useSingleQuery, useState } from '@/utils/ReactUtils';
+import { useSingleQuery, useState } from '@/utils/ReactUtils';
 import { Text } from '@/app/components/Text';
 import { SearchBar } from '@/app/components/SearchBar';
 import { devices } from '@/utils/deviceUtils';
 import { Div } from '@/app/components/Div';
-import { PlusIcon } from '@/app/components/icons';
+import { TextIllusatration, PlusIcon } from '@/app/components/assets';
 import { useEffect } from 'react';
+import ArrayUtils from '@/utils/ArrayUtils';
+import { Button } from '@/app/components/Button';
+import { getPropertiesQuery } from '@/services/property';
 
 export function HomePage() {
   const shouldWait = useState(true);
   const searchText = useState('');
-  let { data, refetch } = useSingleQuery(
-    new GqlBuilder<Property>(PropertyOperation.Get)
-      .select(s => s.id)
-      .select(s => s.title)
-      .select(s => s.description)
-      .select(s => s.floor)
-      .select(s => s.nbRooms)
-      .select(s => s.surface)
-      .select(s => s.rentPerMonth)
-      .select(s => s.landlord)
-      .select(s => s.address!.city)
-      .select(s => s.address!.street)
-      .select(s => s.address!.zip)
-      .select(s => s.address!.country),
-  );
+  let { data, refetch } = useSingleQuery(getPropertiesQuery);
   const onPropertyUpdate = async () => {
     await refetch();
   };
@@ -66,14 +54,10 @@ export function HomePage() {
 
   // used as a loading screen, making sure CSS transitions are applied
   useEffect(() => {
-    setTimeout(
-      () => {
-        shouldWait.state = false;
-      },
-       1500,
-    );
+    setTimeout(() => {
+      shouldWait.state = false;
+    }, 1500);
   }, [shouldWait, data]);
-
   return (
     <>
       <Helmet>
@@ -90,12 +74,19 @@ export function HomePage() {
         <AddNewProperty onClick={createNewProperty}>
           <PlusIcon />
         </AddNewProperty>
+        {ArrayUtils.isEmpty(data) && !shouldWait.state && (
+          <BackgroundIllustration>
+            <TextIllusatration className="illustration" />
+            <Text>No properties found. Would you like to generate some ?</Text>
+            <Button type="light">Generate random properties</Button>
+          </BackgroundIllustration>
+        )}
         {toggleNewPropModal.state && (
           <PropertyCard
             property={newProp.state}
             toggleModal={toggleNewPropModal}
             onPropertyUpdate={onPropertyUpdate}
-            />
+          />
         )}
         <ProperiesWrapper>
           {(!data || shouldWait.state) &&
@@ -120,6 +111,33 @@ export function HomePage() {
     </>
   );
 }
+
+const BackgroundIllustration = styled(Div)`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .illustration {
+    filter: ${p => p.theme.backgroundImageFilter};
+    width: 10em;
+    height: 10em;
+  }
+
+  .Text {
+    margin-top: 5em;
+    font-size: 1.2em;
+    color: ${p => p.theme.backgroundTextColorHeavy};
+  }
+
+  .Button {
+    margin-top: 2em;
+  }
+`;
 
 const BodyContent = styled.div`
   padding: calc(${p => p.theme.navBarHeight} + 2em) ${p => p.theme.appPadding};
@@ -154,16 +172,6 @@ const ProperiesWrapper = styled.div`
   .property-card {
     width: 100%;
   }
-`;
-
-const Button = styled.button`
-  background-color: ${p => p.theme.accentColor};
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.7em 1em;
-  font-size: 1em;
-  box-shadow: ${p => p.theme.boxShadowSharp};
 `;
 
 const AddNewProperty = styled(Div)`
