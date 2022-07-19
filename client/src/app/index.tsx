@@ -14,6 +14,7 @@ import { Div } from '@/app/components/Div';
 import { isDarkTheme } from '@/utils/deviceUtils';
 import { AppManager } from '@/app/AppManager';
 import { ViewProperty } from '@/app/pages/ViewProperty/Loadable';
+import { Clients } from './pages/Clients/Loadable';
 
 declare module 'styled-components' {
   export interface DefaultTheme extends ThemeProperties {}
@@ -45,6 +46,7 @@ export function App(props: any) {
 
       <ThemeProvider theme={theme}>
         <Switch>
+          <Route path="/clients" component={Clients} />
           <Route path="/property/:id" component={ViewProperty} />
           <Route path="/" component={HomePage} />
           <Route component={NotFoundPage} />

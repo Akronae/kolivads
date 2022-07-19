@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Text } from './Text';
 import { ThemeManager, lightTheme, darkTheme, ZIndex } from '@/styles/theme';
 import { devices } from '@/utils/deviceUtils';
+import { Div } from './Div';
 
 interface Props extends DefaultProps {}
 
@@ -20,7 +21,11 @@ export function NavBar({ className, children }: Props) {
         </span>
         {Config.projectName.substring(1)}
       </Logo>
-      {children}
+      <div className="items">
+        <Div onClick={() => history.push('/')}>Properties</Div>
+        <Div onClick={() => history.push('/clients')}>Clients</Div>
+        {children}
+      </div>
       <SwitchThemeButton
         onClick={() =>
           (ThemeManager.current = isLightTheme ? darkTheme : lightTheme)
@@ -51,6 +56,16 @@ const NavBarWrapper = styled.div`
 
     @media ${devices.tablet} {
       margin-right: 2em;
+    }
+  }
+
+  .items {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    div {
+      margin-right: 1em;
     }
   }
 `;

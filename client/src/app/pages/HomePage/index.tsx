@@ -8,7 +8,11 @@ import {
 } from '@/app/components/PropertyCard';
 import { Config } from '@/config';
 import { NavBar } from '@/app/components/NavBar';
-import { useSingleQuery, useState } from '@/utils/ReactUtils';
+import {
+  useSingleMutation,
+  useSingleQuery,
+  useState,
+} from '@/utils/ReactUtils';
 import { Text } from '@/app/components/Text';
 import { SearchBar } from '@/app/components/SearchBar';
 import { devices } from '@/utils/deviceUtils';
@@ -17,17 +21,20 @@ import { TextIllusatration, PlusIcon } from '@/app/components/assets';
 import { useEffect } from 'react';
 import ArrayUtils from '@/utils/ArrayUtils';
 import { Button } from '@/app/components/Button';
-import { getPropertiesQuery } from '@/services/property';
+import {
+  createPropertiesQuery,
+  getPropertiesQuery,
+  getRandomPropertyTemplate,
+  PropertyUpdateInput,
+} from '@/services/property';
 
 export function HomePage() {
   const shouldWait = useState(true);
   const searchText = useState('');
   let { data, refetch } = useSingleQuery(getPropertiesQuery);
-  const onPropertyUpdate = async () => {
-    await refetch();
-  };
-
+  const createProperties = useSingleMutation(createPropertiesQuery);
   const toggleNewPropModal = useState(false);
+
   const newProp = useState({
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -51,13 +58,26 @@ export function HomePage() {
   const createNewProperty = async () => {
     toggleNewPropModal.state = true;
   };
+  const onPropertyUpdate = async () => {
+    await refetch();
+  };
+
+  const generateRandomProperties = async () => {
+    const properties: PropertyUpdateInput[] = [];
+    for (let i = 0; i < 10; i++) {
+      properties.push(getRandomPropertyTemplate());
+    }
+    await createProperties({ variables: { data: properties } });
+    await refetch();
+  };
 
   // used as a loading screen, making sure CSS transitions are applied
   useEffect(() => {
     setTimeout(() => {
       shouldWait.state = false;
-    }, 1500);
+    }, 500);
   }, [shouldWait, data]);
+
   return (
     <>
       <Helmet>
@@ -78,7 +98,7 @@ export function HomePage() {
           <BackgroundIllustration>
             <TextIllusatration className="illustration" />
             <Text>No properties found. Would you like to generate some ?</Text>
-            <Button type="light">Generate random properties</Button>
+            <Button type="light" onClick={generateRandomProperties}>Generate random properties</Button>
           </BackgroundIllustration>
         )}
         {toggleNewPropModal.state && (

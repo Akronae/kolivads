@@ -7,7 +7,18 @@ import React, {
   RefAttributes,
   CSSProperties,
 } from 'react';
-import { OperationVariables, QueryHookOptions, useQuery } from '@apollo/client';
+import {
+  ApolloCache,
+  DefaultContext,
+  DocumentNode,
+  MutationHookOptions,
+  MutationTuple,
+  OperationVariables,
+  QueryHookOptions,
+  TypedDocumentNode,
+  useMutation,
+  useQuery,
+} from '@apollo/client';
 import GqlBuilder from './GqlBuilder';
 import ObjectUtils from './ObjectUtils';
 
@@ -80,6 +91,25 @@ export function useSingleQuery<
     refetch: q.refetch,
     loading: q.loading,
     error: q.error,
+  };
+}
+
+export function useSingleMutation<
+  TData extends object,
+  TVariables = OperationVariables,
+  TContext = DefaultContext,
+>(
+  build: GqlBuilder<TData>,
+  options?: MutationHookOptions<TData, TVariables, TContext>,
+): (
+  options?: MutationHookOptions<TData, TVariables, TContext>,
+) => Promise<TData[]> {
+  const [mut] = useMutation(build.build(), options);
+  return async (options?: MutationHookOptions<TData, TVariables, TContext>) => {
+    const q = await mut(options);
+    var data = q.data ? Object.values(q.data)[0] : q.data;
+    q.data = data;
+    return data;
   };
 }
 

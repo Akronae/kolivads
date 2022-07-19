@@ -54,7 +54,7 @@ export function Input(this: any, p: Props) {
   const displayedSuggestions: string[] = [];
   if (showSuggestions.state) {
     displayedSuggestions.push(
-      ...suggestions!.filter(
+      ...ArrayUtils.filterDuplicates(suggestions!).filter(
         s =>
           !inputValue.state ||
           (s &&
@@ -93,7 +93,7 @@ export function Input(this: any, p: Props) {
         {label}
       </Div>
       <NameSeparator showIf={!!label} direction={Direction.Vertical} />
-      <div>
+      <div style={{ width: '100%' }}>
         <input
           ref={inputRef}
           type={type}
@@ -170,6 +170,20 @@ const InputWrapper = styled(Div)`
     border-radius: 10px;
     min-width: 10em;
     box-shadow: ${p => p.theme.boxShadowSharp};
+    max-height: 20vh;
+    overflow-y: overlay;
+
+    ::-webkit-scrollbar-thumb {
+      background-color: ${p => p.theme.backgroundTextColor};
+      border: 6px solid transparent;
+
+      border-radius: 8px;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar {
+      width: 16px;
+    }
 
     .item {
       padding: 1em;

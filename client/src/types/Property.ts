@@ -18,7 +18,7 @@ export interface Property {
 
 export enum PropertyOperation {
   Get = 'getProperties',
-  Create = 'createProperty',
+  Create = 'createProperties',
   Update = 'updateProperties',
   Delete = 'deleteProperties',
 }

@@ -3,6 +3,7 @@ import {
   DefaultProps,
   ReactiveState,
   takeSubState,
+  useSingleMutation,
   useSingleQuery,
   useState,
   useStateIfDefined,
@@ -24,7 +25,7 @@ import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
 import { useMutation } from '@apollo/client';
-import GqlBuilder, { GqlVariable, RequestType } from '@/utils/GqlBuilder';
+import GqlBuilder, { GqlVariable } from '@/utils/GqlBuilder';
 import { useHistory } from 'react-router-dom';
 import {
   createPropertiesQuery,
@@ -60,9 +61,9 @@ export function PropertyCard(p: Props) {
       .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
       .select(p => p.landlord),
   );
-  const [updateProperty] = useMutation(updatePropertiesQuery);
-  const [createProperty] = useMutation(createPropertiesQuery);
-  const [deleteProperties] = useMutation(deletePropertiesQuery);
+  const [updateProperty] = useMutation(updatePropertiesQuery.build());
+  const createProperties = useSingleMutation(createPropertiesQuery);
+  const [deleteProperties] = useMutation(deletePropertiesQuery.build());
 
   const saveChanges = async () => {
     const update = {
@@ -83,10 +84,7 @@ export function PropertyCard(p: Props) {
     var updated: Property | null = null;
 
     if (propState.id < 0) {
-      const p = (await createProperty({ variables: { data: update } }))?.data?.[
-        PropertyOperation.Create
-      ];
-      updated = p;
+      updated = (await createProperties({ variables: { data: [update] } }))[0];
     } else {
       await updateProperty({
         variables: {
