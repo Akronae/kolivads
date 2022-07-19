@@ -1,4 +1,4 @@
-import { getModelForClass } from "@typegoose/typegoose";
+import { getModelForClass, Prop } from "@typegoose/typegoose";
 import { ObjectId } from "mongodb";
 
 import { Property } from "@/entities/Property";
@@ -19,10 +19,11 @@ export default class PropertyModel {
     return PropertyMongooseModel.findById(_id).lean().exec();
   }
 
-  async create(data: PropertyCreateInput): Promise<any> {
+  async create(data: PropertyCreateInput): Promise<Property> {
     const Property = new PropertyMongooseModel(data);
 
-    return Property.save();
+    const prop = await Property.save();
+    return await this.getById(prop._id) as Property;
   }
 
   async update(filter: PropertyFilterInput, update: PropertyUpdateInput): Promise<number> {

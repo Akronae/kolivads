@@ -20,10 +20,14 @@ export default class PropertyService {
     return this.propertyModel.getById(_id);
   }
 
-  public async addProperty(data: PropertyCreateInput): Promise<Property> {
-    const newProperty = await this.propertyModel.create(data);
+  public async addProperties(data: PropertyCreateInput[]): Promise<Property[]> {
+    const newProperties = [];
 
-    return newProperty;
+    for (const property of data) {
+      newProperties.push( await this.propertyModel.create(property));
+    }
+
+    return newProperties;
   }
 
   public async update(filter: PropertyFilterInput, update: PropertyUpdateInput): Promise<number> {

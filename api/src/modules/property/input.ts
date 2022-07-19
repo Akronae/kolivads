@@ -7,26 +7,34 @@ import { Field, InputType } from "type-graphql";
 export class PropertyCreateInput {
   @Field()
   @Min(0)
-  floor!: number;
+  floor: number;
 
   @Field()
-  @Min(1)
-  surface!: number;
+  surface: number;
 
   @Field()
-  description!: string;
+  description: string;
 
   @Field()
-  title!: string;
+  title: string;
 
-  @Field(type => Address)
-  address!: Address;
-
-  @Field()
-  rentPerMonth!: number;
+  @Field(type => Address, )
+  address: Address;
 
   @Field()
-  nbRooms!: number;
+  rentPerMonth: number;
+
+  @Field()
+  landlord: string;
+
+  @Field()
+  nbRooms: number;
+
+  @Field()
+  isReserved: boolean;
+
+  @Field({ nullable: true })
+  reservedBy?: number;
 }
 
 @InputType()
@@ -48,6 +56,9 @@ export class PropertyUpdateInput {
 
   @Field({ nullable: true })
   rentPerMonth?: number;
+
+  @Field({ nullable: true })
+  landlord?: string;
 
   @Field({ nullable: true })
   nbRooms?: number;

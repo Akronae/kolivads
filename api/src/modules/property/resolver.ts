@@ -16,11 +16,11 @@ export default class PropertyResolver {
     return await this.propertyService.getProperties(filter);
   }
 
-  @Mutation((returns) => Property)
-  async createProperty(
-    @Arg("data") data: PropertyCreateInput
-  ): Promise<Property> {
-    return await this.propertyService.addProperty(data);
+  @Mutation((returns) => [Property])
+  async createProperties(
+    @Arg("data", type => [PropertyCreateInput]) data: PropertyCreateInput[]
+  ): Promise<Property[]> {
+    return await this.propertyService.addProperties(data);
   }
 
   @Mutation((returns) => Number)

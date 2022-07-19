@@ -26,7 +26,7 @@ export class Property {
 
   @prop()
   @Field()
-  landlord!: string;
+  landLord!: string;
 
   @prop({ min: 0 })
   @Field()
