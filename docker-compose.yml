@@ -1,6 +1,6 @@
 version: "3"
 services:
-  database:
+  db:
     image: "mongo:latest"
     container_name: "mongo-db-database"
     environment:
@@ -12,3 +12,17 @@ services:
     volumes:
       - ./data/mongo-db-volume:/data/db
     restart: always
+  api:
+    build: ./api
+    command: npm run start
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  client:
+    build: ./client
+    command: yarn serve -s build
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api

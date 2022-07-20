@@ -98,6 +98,7 @@
     ]
   },
   "devDependencies": {
+    "craco": "0.0.3",
     "ts-nameof.macro": "4.2.2"
   }
 }

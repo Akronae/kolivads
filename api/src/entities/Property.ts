@@ -62,5 +62,5 @@ export class Property {
 
   @prop()
   @Field({ nullable: true })
-  reservedBy?: string;
+  reservedBy?: number;
 }

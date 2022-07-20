@@ -41,21 +41,21 @@ export function HomePage() {
     createdAt: new Date(),
     updatedAt: new Date(),
     id: -1,
-    title: 'bonjour' + Math.random(),
-    description: Math.random().toString(),
+    title: '',
+    description: '',
     address: {
-      city: Math.random().toString(),
-      street: Math.random().toString(),
-      zip: Math.random().toString(),
-      country: Math.random().toString(),
+      city: '',
+      street: '',
+      zip: '',
+      country: '',
     },
-    floor: Math.random() * 100,
-    nbRooms: Math.random() * 100,
-    surface: Math.random() * 100,
-    rentPerMonth: Math.random() * 100,
-    landlord: Math.random().toString(),
+    floor: 1,
+    nbRooms: 1,
+    surface: 1,
+    rentPerMonth: 1,
+    landlord: '',
     isReserved: false,
-    reservedBy: Math.random().toString(),
+    reservedBy: null,
   });
   const createNewProperty = async () => {
     toggleNewPropModal.state = true;
@@ -94,7 +94,7 @@ export function HomePage() {
           Results for « {searchText.state} »
         </SearchInfo>
         <FixedButton onClick={createNewProperty} />
-        {ArrayUtils.isEmpty(data) && !shouldWait.state && (
+        {data?.length == 0 && !shouldWait.state && (
           <BackgroundIllustration
             illustration={<TextIllusatration />}
             text="No properties found. Would you like to generate some ?"
