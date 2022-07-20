@@ -56,9 +56,10 @@ export class Property {
   @Field()
   nbRooms: number;
 
-  @prop()
   @Field()
-  isReserved!: boolean;
+  get isReserved(): boolean {
+    return this.reservedBy != undefined && this.reservedBy >= 0;
+  }
 
   @prop()
   @Field({ nullable: true })

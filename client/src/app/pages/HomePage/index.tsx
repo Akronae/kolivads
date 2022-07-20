@@ -50,7 +50,6 @@ export function HomePage() {
     surface: 1,
     rentPerMonth: 1,
     landlord: '',
-    isReserved: false,
     reservedBy: null,
   });
   const createNewProperty = async () => {

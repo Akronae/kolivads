@@ -35,6 +35,7 @@ export class ReactiveState<T> extends Array<T | Dispatch<SetStateAction<T>>> {
     return this[0];
   }
   set state(state: T) {
+    if (this.state === state) return;
     this[1](state);
   }
 }
@@ -95,13 +96,15 @@ export function useSingleMutation<
   TVariables = OperationVariables,
   TContext = DefaultContext,
 >(
-  build: GqlBuilder<TData>,
+  build: GqlBuilder<TData, TVariables>,
   options?: MutationHookOptions<TData, TVariables, TContext>,
 ): (
   options?: MutationHookOptions<TData, TVariables, TContext>,
 ) => Promise<TData[]> {
   const [mut] = useMutation(build.build(), options);
-  return async (options?: MutationHookOptions<TData, TVariables, TContext>) => {
+  return async (
+    options?: MutationHookOptions<TData, TVariables, TContext>,
+  ): Promise<TData[]> => {
     const q = await mut(options);
     var data = q.data ? Object.values(q.data)[0] : q.data;
     q.data = data;

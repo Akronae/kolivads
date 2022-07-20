@@ -5,13 +5,15 @@ import styled from 'styled-components';
 import { Div } from './Div';
 import { Direction, Separator } from './Separator';
 
+type Suggestion = { label: string; value: string };
+
 interface Props extends DefaultProps {
   type?: string;
   placeholder?: string;
   icon?: ReactNode;
   label?: string;
   value?: any;
-  suggestions?: string[];
+  suggestions?: Array<string | Suggestion>;
 }
 
 function onInputChange(e: React.ChangeEvent<HTMLInputElement>, props: Props) {
@@ -35,6 +37,10 @@ export function Input(this: any, p: Props) {
     suggestions,
     ...passedProps
   } = p;
+  const parsedSuggestions =
+    suggestions?.map(s =>
+      typeof s === 'string' ? { label: s, value: s } : s,
+    ) || [];
   const inputValue = useStateIfDefined(model, value || '');
 
   passedProps.className += ' Input';
@@ -43,27 +49,27 @@ export function Input(this: any, p: Props) {
     !showSuggestions.state &&
     document.activeElement === inputRef.current &&
     ArrayUtils.isNotEmpty(suggestions) &&
-    !suggestions?.includes(inputValue.state)
+    !parsedSuggestions.some(s => s.label === inputValue.state)
   ) {
     showSuggestions.state = true;
   }
 
-  const displayedSuggestions: string[] = [];
+  const displayedSuggestions: Suggestion[] = [];
   if (showSuggestions.state) {
     displayedSuggestions.push(
-      ...ArrayUtils.filterDuplicates(suggestions!).filter(
+      ...ArrayUtils.filterDuplicates(parsedSuggestions!).filter(
         s =>
           !inputValue.state ||
           (s &&
-            s !== inputValue.state &&
-            s.toLowerCase().includes(inputValue.state.toLowerCase())),
+            s.value !== inputValue.state &&
+            s.value.toLowerCase().includes(inputValue.state.toLowerCase())),
       ),
     );
   }
 
-  const onSuggestionClicked = (suggestion: string) => {
+  const onSuggestionClicked = (suggestion: Suggestion) => {
     showSuggestions.state = false;
-    inputValue.state = suggestion;
+    inputValue.state = suggestion.value;
   };
   const onInputBlur = () => {
     if (
@@ -101,10 +107,10 @@ export function Input(this: any, p: Props) {
             {displayedSuggestions.map(s => (
               <div
                 className="item"
-                key={s}
+                key={s.label}
                 onClick={() => onSuggestionClicked(s)}
               >
-                {s}
+                {s.label}
               </div>
             ))}
           </div>

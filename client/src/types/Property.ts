@@ -12,7 +12,6 @@ export interface Property {
   address: Address;
   rentPerMonth: number;
   nbRooms: number;
-  isReserved: boolean;
   reservedBy: number | null;
 }
 

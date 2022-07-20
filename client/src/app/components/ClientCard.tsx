@@ -3,7 +3,6 @@ import {
   ReactiveState,
   takeSubState,
   useSingleMutation,
-  useState,
   useStateIfDefined,
 } from '@/utils/ReactUtils';
 import styled from 'styled-components';
@@ -11,7 +10,6 @@ import { Div } from '@/app/components/Div';
 import { Client } from '@/types/Client';
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
-import ObjectUtils from '@/utils/ObjectUtils';
 import { Button } from './Button';
 import { Text } from './Text';
 import { TrashIcon } from './assets';
@@ -22,7 +20,7 @@ import {
 } from '@/services/client';
 
 interface Props extends DefaultProps {
-  client: Client;
+  client: ReactiveState<Client> | Client;
   onUpdated?: (client: Client | null) => void;
   editMode?: ReactiveState<boolean> | boolean;
 }
@@ -35,7 +33,13 @@ export function ClientCard(p: Props) {
   const createClients = useSingleMutation(createClientsQuery);
   const updateClients = useSingleMutation(updateClientsQuery);
   const deleteClients = useSingleMutation(deleteClientsQuery);
-  const clientState = useState(ObjectUtils.clone(client));
+  const clientState = useStateIfDefined(client, {
+    email: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    id: -1,
+  });
   const editModeToggled = useStateIfDefined(editMode, false);
 
   const onEditButtonClick = () => {
@@ -43,14 +47,14 @@ export function ClientCard(p: Props) {
   };
 
   const onSaveButtonClick = async () => {
-    const { email, firstName, lastName, phone } = clientState.state;
+    const { email, firstName, lastName, phone, id } = clientState.state;
     const update = { email, firstName, lastName, phone };
     let updated: Client | null = null;
-    if (client.id > 0) {
+    if (id > 0) {
       updated = (
         await updateClients({
           variables: {
-            filter: { id: client.id },
+            filter: { id },
             update,
           },
         })
@@ -59,7 +63,7 @@ export function ClientCard(p: Props) {
       updated = (
         await createClients({
           variables: {
-            data: update,
+            data: [update],
           },
         })
       )[0];
@@ -69,8 +73,10 @@ export function ClientCard(p: Props) {
   };
 
   const onDeleteButtonClick = async () => {
-    await deleteClients({ variables: { filter: { id: client.id } } });
-    onUpdated?.(client);
+    await deleteClients({
+      variables: { filter: { id: clientState.state.id } },
+    });
+    onUpdated?.(clientState.state);
   };
 
   const modelOf = (key: string) => takeSubState(key, clientState);
@@ -131,9 +137,6 @@ const ClientCardWrapper = styled(Div)`
   flex-direction: row;
   border-radius: 10px;
   margin-top: 10px;
-
-  .Text {
-  }
 
   .Button {
     margin-left: auto;

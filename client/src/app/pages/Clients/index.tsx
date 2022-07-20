@@ -10,6 +10,7 @@ import {
   getRandomClientTemplate,
 } from '@/services/client';
 import { Client } from '@/types/Client';
+import ObjectUtils from '@/utils/ObjectUtils';
 import {
   useSingleMutation,
   useSingleQuery,
@@ -75,7 +76,11 @@ export function Clients() {
         {data &&
           data
             .map(c => (
-              <ClientCard client={c} key={c.id} onUpdated={onClientUpdated} />
+              <ClientCard
+                client={ObjectUtils.clone(c)}
+                key={c.id}
+                onUpdated={onClientUpdated}
+              />
             ))
             .reverse()}
       </BodyContent>

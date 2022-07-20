@@ -8,12 +8,15 @@ export interface ClientFilterInput {
 }
 
 export interface ClientUpdateInput {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
 }
-export const getClientsQuery = new GqlBuilder<Client>(ClientOperation.Get)
+export const getClientsQuery = new GqlBuilder<
+  Client,
+  { filter?: ClientFilterInput }
+>(ClientOperation.Get)
   .addArgument('filter', new GqlVariable('filter', nameof<ClientFilterInput>()))
   .select(s => s.id)
   .select(s => s.firstName)
@@ -21,24 +24,27 @@ export const getClientsQuery = new GqlBuilder<Client>(ClientOperation.Get)
   .select(s => s.email)
   .select(s => s.phone);
 
-export const updateClientsQuery = new GqlBuilder<Client>(
-  ClientOperation.Update,
-  RequestType.Mutation,
-)
+export const updateClientsQuery = new GqlBuilder<
+  Client,
+  { filter?: ClientFilterInput; update: ClientUpdateInput }
+>(ClientOperation.Update, RequestType.Mutation)
   .addArgument('filter', new GqlVariable('filter', 'ClientFilterInput'))
   .addArgument('update', new GqlVariable('update', 'ClientUpdateInput'));
 
-export const createClientsQuery = new GqlBuilder<Client>(
-  ClientOperation.Create,
-  RequestType.Mutation,
-)
+export const createClientsQuery = new GqlBuilder<
+  Client,
+  { data: ClientUpdateInput[] }
+>(ClientOperation.Create, RequestType.Mutation)
   .addArgument('data', new GqlVariable('data', '[ClientCreateInput!]!'))
   .select(p => p.id);
 
-export const deleteClientsQuery = new GqlBuilder<Client>(
-  ClientOperation.Delete,
-  RequestType.Mutation,
-).addArgument('filter', new GqlVariable('filter', 'ClientFilterInput'));
+export const deleteClientsQuery = new GqlBuilder<
+  Client,
+  { filter: ClientFilterInput }
+>(ClientOperation.Delete, RequestType.Mutation).addArgument(
+  'filter',
+  new GqlVariable('filter', 'ClientFilterInput'),
+);
 
 export function getRandomClientTemplate(): ClientUpdateInput {
   const firstName = ArrayUtils.getRandomElement([
@@ -64,9 +70,10 @@ export function getRandomClientTemplate(): ClientUpdateInput {
   return {
     firstName,
     lastName,
-    email:
-      `${firstName}.${lastName}@` +
-      ArrayUtils.getRandomElement(['gmail.com', 'yahoo.com', 'hotmail.com']),
+    email: (
+      `${firstName}.${lastName}${Math.ceil(Math.random() * 100)}@` +
+      ArrayUtils.getRandomElement(['gmail.com', 'yahoo.com', 'hotmail.com'])
+    ).toLowerCase(),
     phone:
       '06' +
       Array(8)

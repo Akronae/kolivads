@@ -24,7 +24,6 @@ import {
 import { Input } from './Input';
 import nameof from 'ts-nameof.macro';
 import ObjectUtils from '@/utils/ObjectUtils';
-import { useMutation } from '@apollo/client';
 import GqlBuilder, { GqlVariable } from '@/utils/GqlBuilder';
 import { useHistory } from 'react-router-dom';
 import {
@@ -32,6 +31,9 @@ import {
   deletePropertiesQuery,
   updatePropertiesQuery,
 } from '@/services/property';
+import { Client } from '@/types/Client';
+import { createClientsQuery, getClientsQuery } from '@/services/client';
+import { Button } from './Button';
 
 export interface Props extends DefaultProps {
   property: Property;
@@ -49,23 +51,44 @@ export function PropertyCard(p: Props) {
     ...passedProps
   } = p;
 
-  const [originalPropState, setOriginalPropState] = useState(
-    ObjectUtils.clone(property),
-  );
-  const propState = useState(ObjectUtils.clone(property));
-  const modalToggled = useStateIfDefined(toggleModal, false);
-  const history = useHistory();
-
   const landlordsQuery = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
       .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
       .select(p => p.landlord),
   );
-  const [updateProperty] = useMutation(updatePropertiesQuery.build());
+  const updateProperty = useSingleMutation(updatePropertiesQuery);
   const createProperties = useSingleMutation(createPropertiesQuery);
-  const [deleteProperties] = useMutation(deletePropertiesQuery.build());
+  const deleteProperties = useSingleMutation(deletePropertiesQuery);
+  const getClients = useSingleQuery(getClientsQuery);
+  const createClients = useSingleMutation(createClientsQuery);
+  const [originalPropState, setOriginalPropState] = useState(
+    ObjectUtils.clone(property),
+  );
+  const propState = useState(ObjectUtils.clone(property));
+  const reservedBy = useState<string | null>(null);
+  const newClient = useState<Client>({
+    id: -1,
+    email: '',
+    phone: '',
+    firstName: '',
+    lastName: '',
+  });
+  const modalToggled = useStateIfDefined(toggleModal, false);
+  const history = useHistory();
 
   const saveChanges = async () => {
+    newClient.state.email = reservedBy.state!;
+    propState.state.reservedBy =
+      getClients.data?.find(c => c.email === reservedBy.state)?.id || null;
+
+    if (newClient.state.email && !propState.state.reservedBy) {
+      const { email, firstName, lastName, phone } = newClient.state;
+      const data = [{ email, firstName, lastName, phone }];
+      const createdClient = (await createClients({ variables: { data } }))[0];
+      propState.state.reservedBy = createdClient.id;
+      getClients.refetch();
+    }
+
     const update = {
       title: propState.state.title,
       description: propState.state.description,
@@ -80,6 +103,7 @@ export function PropertyCard(p: Props) {
         zip: propState.state.address!.zip,
         country: propState.state.address!.country,
       },
+      reservedBy: propState.state.reservedBy,
     };
     var updated: Property | null = null;
 
@@ -120,6 +144,15 @@ export function PropertyCard(p: Props) {
     setOriginalPropState(ObjectUtils.clone(property));
     propState.state = ObjectUtils.clone(property);
   }
+
+  const shouldCreateNewClient =
+    !!reservedBy.state &&
+    !getClients.data?.some(c => c.email === reservedBy.state);
+
+  const reservedByFromProp = getClients.data?.find(
+    c => c.id === propState.state.reservedBy,
+  );
+  if (reservedBy.state == null) reservedBy.state = reservedByFromProp?.email!;
 
   return (
     <Card
@@ -228,6 +261,58 @@ export function PropertyCard(p: Props) {
             model={modelOf(nameof.full<Property>(p => p.address!.country))}
             type="text"
             label="Country"
+          />
+          <Stat
+            model={reservedBy}
+            type="text"
+            label="Reserved by"
+            placeholder="email"
+            suggestions={getClients.data?.map(p => ({
+              label: `${p.firstName} ${p.lastName} (${p.email})`,
+              value: p.email,
+            }))}
+          >
+            <Button
+              type="text"
+              icon={<ShareIcon />}
+              onClick={() => window.open('/clients', '_blank')}
+              showIf={!shouldCreateNewClient && !!reservedBy.state}
+            >
+              View
+            </Button>
+          </Stat>
+          <Stat
+            model={takeSubState(
+              nameof.full<Client>(p => p.firstName),
+              newClient,
+            )}
+            type="text"
+            label="First name"
+            showIf={shouldCreateNewClient}
+          />
+          <Stat
+            model={takeSubState(
+              nameof.full<Client>(p => p.lastName),
+              newClient,
+            )}
+            type="text"
+            label="Last name"
+            showIf={shouldCreateNewClient}
+          />
+          <Stat
+            model={reservedBy}
+            type="text"
+            label="Email"
+            showIf={shouldCreateNewClient}
+          />
+          <Stat
+            model={takeSubState(
+              nameof.full<Client>(p => p.phone),
+              newClient,
+            )}
+            type="text"
+            label="Phone"
+            showIf={shouldCreateNewClient}
           />
           <Div className="actions">
             <Div className="btn" onClick={hideModal}>

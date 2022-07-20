@@ -14,7 +14,8 @@ export enum RequestType {
   Mutation = 'mutation',
 }
 
-export default class GqlBuilder<T extends object> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default class GqlBuilder<T extends object, TVar = any> {
   private selectFields: string[] = [];
   private arguments: { [index: string]: any } = {};
   private variables: GqlVariable[] = [];
@@ -47,7 +48,7 @@ export default class GqlBuilder<T extends object> {
   /**
    * Add a field that the query should return.
    */
-  public select(selector: (obj: T) => any): GqlBuilder<T> {
+  public select(selector: (obj: T) => any): this {
     this.selectFields.push(this.getLambdaIdentifierName(selector));
     return this;
   }
@@ -55,7 +56,7 @@ export default class GqlBuilder<T extends object> {
   /**
    * Add an argument to the query.
    */
-  public addArgument(name: string, value: any | GqlVariable): GqlBuilder<T> {
+  public addArgument(name: string, value: any | GqlVariable): this {
     var valueStr = ObjectUtils.toStringWithoutKeyQuotes(value);
     if (value instanceof GqlVariable) {
       this.variables.push(value);

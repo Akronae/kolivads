@@ -43,16 +43,13 @@ export function Text(p: Props) {
 }
 
 const TextWrapper = styled(Div)`
-  .content {
-    display: flex;
-    flex-direction: column;
-
-    &.center-horizontal {
-      align-items: center;
-    }
-    &.center-vertical {
-      justify-content: center;
-    }
+  &.center-horizontal {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  &.center-vertical {
+    margin-top: auto;
+    margin-bottom: auto;
   }
 
   svg {

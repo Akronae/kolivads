@@ -39,7 +39,8 @@ export const getPropertiesQuery = new GqlBuilder<Property>(
   .select(s => s.address!.city)
   .select(s => s.address!.street)
   .select(s => s.address!.zip)
-  .select(s => s.address!.country);
+  .select(s => s.address!.country)
+  .select(s => s.reservedBy);
 
 export const updatePropertiesQuery = new GqlBuilder<Property>(
   PropertyOperation.Update,
@@ -126,6 +127,5 @@ export function getRandomPropertyTemplate(): PropertyUpdateInput {
         'Giraud',
         'Garcia',
       ]),
-    isReserved: false,
   };
 }

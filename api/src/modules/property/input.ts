@@ -30,9 +30,6 @@ export class PropertyCreateInput {
   @Field()
   nbRooms: number;
 
-  @Field()
-  isReserved: boolean;
-
   @Field({ nullable: true })
   reservedBy?: number;
 }
@@ -62,6 +59,9 @@ export class PropertyUpdateInput {
 
   @Field({ nullable: true })
   nbRooms?: number;
+
+  @Field({ nullable: true })
+  reservedBy?: number;
 }
 
 @InputType()
