@@ -8,14 +8,10 @@ import React, {
   CSSProperties,
 } from 'react';
 import {
-  ApolloCache,
   DefaultContext,
-  DocumentNode,
   MutationHookOptions,
-  MutationTuple,
   OperationVariables,
   QueryHookOptions,
-  TypedDocumentNode,
   useMutation,
   useQuery,
 } from '@apollo/client';

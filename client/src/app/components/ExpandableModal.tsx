@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { Div } from './Div';
 import { ZIndex } from '@/styles/theme';
 import { CrossIcon } from '@/app/components/assets';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 
 export interface Props extends DefaultProps {
   topActions?: ReactNode;
@@ -81,7 +81,7 @@ export function ExpandableModal(p: Props) {
           <Div showIf={editModalToggled.state}>{modalContent}</Div>
         </div>
         <Div className="click-action-label" showIf={!editModalToggled.state}>
-          {hoverContent}
+          <div className="hover-content">{hoverContent}</div>
         </Div>
       </ExpandableModalWrapper>
     </>
@@ -98,16 +98,7 @@ const ExpandableModalWrapper = styled(Div)`
   &.clickable {
     &:hover {
       .click-action-label {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-
-        .Separator {
-          background-color: rgba(255, 255, 255, 0.4);
-        }
-      }
-      .content {
-        filter: brightness(50%);
+        display: block;
       }
     }
   }
@@ -157,11 +148,31 @@ const ExpandableModalWrapper = styled(Div)`
     top: 40%;
     transform: translate(-50%, -40%);
     z-index: ${ZIndex.Regular};
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: inherit;
+    backdrop-filter: blur(1px);
 
-    svg {
-      width: 1.5em;
-      height: 1.5em;
-      margin-bottom: 0.5em;
+    .hover-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      .Separator {
+        background-color: rgba(255, 255, 255, 0.4);
+        width: 50%;
+        height: 1px;
+      }
+
+      svg {
+        width: 1.5em;
+        height: 1.5em;
+        margin-bottom: 0.5em;
+      }
     }
   }
 

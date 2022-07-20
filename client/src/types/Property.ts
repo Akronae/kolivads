@@ -13,7 +13,7 @@ export interface Property {
   rentPerMonth: number;
   nbRooms: number;
   isReserved: boolean;
-  reservedBy: number|null;
+  reservedBy: number | null;
 }
 
 export enum PropertyOperation {

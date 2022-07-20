@@ -1,5 +1,3 @@
-import { Property, PropertyOperation } from '@/types/Property';
-import GqlBuilder from '@/utils/GqlBuilder';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 import {
@@ -16,10 +14,8 @@ import {
 import { Text } from '@/app/components/Text';
 import { SearchBar } from '@/app/components/SearchBar';
 import { devices } from '@/utils/deviceUtils';
-import { Div } from '@/app/components/Div';
-import { TextIllusatration, PlusIcon } from '@/app/components/assets';
+import { TextIllusatration } from '@/app/components/assets';
 import { useEffect } from 'react';
-import ArrayUtils from '@/utils/ArrayUtils';
 import { Button } from '@/app/components/Button';
 import {
   createPropertiesQuery,
@@ -94,7 +90,7 @@ export function HomePage() {
           Results for « {searchText.state} »
         </SearchInfo>
         <FixedButton onClick={createNewProperty} />
-        {data?.length == 0 && !shouldWait.state && (
+        {data?.length === 0 && !shouldWait.state && (
           <BackgroundIllustration
             illustration={<TextIllusatration />}
             text="No properties found. Would you like to generate some ?"

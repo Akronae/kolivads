@@ -31,9 +31,9 @@ ReactDOMClient.createRoot(MOUNT_NODE!).render(
   <Provider store={store}>
     <HelmetProvider>
       {/* <React.StrictMode> */}
-        <ApolloProvider client={apolloClient}>
-          <App />
-        </ApolloProvider>
+      <ApolloProvider client={apolloClient}>
+        <App />
+      </ApolloProvider>
       {/* </React.StrictMode> */}
     </HelmetProvider>
   </Provider>,

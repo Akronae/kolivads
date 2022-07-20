@@ -2,7 +2,6 @@ import { DefaultProps } from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Div } from '@/app/components/Div';
 import { Text } from '@/app/components/Text';
-import { TextIllusatration } from './assets';
 import { ReactNode } from 'react';
 
 interface Props extends DefaultProps {
