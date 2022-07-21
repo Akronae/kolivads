@@ -60,6 +60,10 @@ export class Property {
   get isReserved(): boolean {
     return this.reservedBy != undefined && this.reservedBy >= 0;
   }
+  set isReserved(val: boolean) {
+    if (!val)
+      this.reservedBy = undefined;
+  }
 
   @prop()
   @Field({ nullable: true })
