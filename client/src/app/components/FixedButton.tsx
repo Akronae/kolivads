@@ -2,6 +2,7 @@ import { DefaultProps } from '@/utils/ReactUtils';
 import styled from 'styled-components';
 import { Div } from '@/app/components/Div';
 import { PlusIcon } from './assets';
+import { ZIndex } from '@/styles/theme';
 
 interface Props extends DefaultProps {}
 
@@ -28,6 +29,7 @@ const FixedButtonWrapper = styled(Div)`
   right: 30px;
   bottom: 30px;
   box-shadow: ${p => p.theme.boxShadowDiffuse};
+  z-index: ${ZIndex.FixedButton};
 
   svg {
     fill: ${p => p.theme.contentBackgroundColor};

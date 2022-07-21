@@ -4,6 +4,7 @@ import React from 'react';
 
 export enum ZIndex {
   Regular,
+  FixedButton,
   NavBar,
   ModalShadow,
   Modal,
