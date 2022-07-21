@@ -50,7 +50,7 @@ export function ClientCard(p: Props) {
     const { email, firstName, lastName, phone, id } = clientState.state;
     const update = { email, firstName, lastName, phone };
     let updated: Client | null = null;
-    if (id > 0) {
+    if (id >= 0) {
       updated = (
         await updateClients({
           variables: {
