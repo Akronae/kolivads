@@ -29,6 +29,7 @@ import { useHistory } from 'react-router-dom';
 import {
   createPropertiesQuery,
   deletePropertiesQuery,
+  PropertyFilterInput,
   updatePropertiesQuery,
 } from '@/services/property';
 import { Client } from '@/types/Client';
@@ -53,7 +54,10 @@ export function PropertyCard(p: Props) {
 
   const landlordsQuery = useSingleQuery(
     new GqlBuilder<Property>(PropertyOperation.Get)
-      .addArgument('filter', new GqlVariable('filter', 'PropertyFilterInput'))
+      .addArgument(
+        'filter',
+        new GqlVariable('filter', nameof<PropertyFilterInput>()),
+      )
       .select(p => p.landlord),
   );
   const updateProperty = useSingleMutation(updatePropertiesQuery);
