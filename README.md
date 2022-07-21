@@ -1,7 +1,7 @@
 # Kolivads
 > ## 🏡 A technical project to manage real estate ads and clients  
 
-<img src="https://i.imgur.com/Wov9NLM.png" />
+<img src="https://i.imgur.com/wzJ2wKb.png" />
 
 # Installation
 ## Docker
