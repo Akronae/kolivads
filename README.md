@@ -28,8 +28,8 @@ cd ./api
 ```
 Edit `.env` according to your MongoDB instance
 ```bash
-cp ./env.example ./env
-./env
+cp ./.env.example ./.env
+./.env
 ```
 Run the API
 ```bash
