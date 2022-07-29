@@ -1,15 +1,15 @@
 import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
 import { Request as Req } from 'express';
-import { AppService } from './app.service';
-import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
-import { JwtSession, JwtSessionPayload } from './modules/auth/jwt.strategy';
-import { LocalAuthGuard } from './modules/auth/local-auth.guard';
+import { AppService } from '@/app.service';
+import { JwtAuthGuard } from '@/modules/auth/jwt-auth.guard';
+import { JwtSession, JwtSessionPayload } from '@/modules/auth/jwt.strategy';
+import { LocalAuthGuard } from '@/modules/auth/local-auth.guard';
 import {
   LocalSession,
   LocalSessionPayload,
-} from './modules/auth/local.strategy';
-import AuthService from './modules/auth/service';
-import ClientService from './modules/client/service';
+} from '@/modules/auth/local.strategy';
+import AuthService from '@/modules/auth/service';
+import ClientService from '@/modules/client/service';
 
 @Controller()
 export class AppController {

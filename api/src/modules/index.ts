@@ -1,7 +1,7 @@
 import { Type } from '@nestjs/common';
-import AuthModule from './auth/module';
-import ClientModule from './client/module';
-import PropertyModule from './property/module';
+import AuthModule from '@/modules/auth/module';
+import ClientModule from '@/modules/client/module';
+import PropertyModule from '@/modules/property/module';
 import { NonEmptyArray } from 'type-graphql';
 
 export const modules: NonEmptyArray<Type<any>> = [

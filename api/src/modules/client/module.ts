@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import ClientResolver from '@/modules/client/resolver';
 import ClientService from '@/modules/client/service';
-import ClientModel from './model';
+import ClientModel from '@/modules/client/model';
 
 @Module({
   providers: [ClientResolver, ClientService, ClientModel],

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeGraphQLModule } from 'typegraphql-nestjs';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from '@/app.controller';
+import { AppService } from '@/app.service';
 
 import { ObjectId } from 'mongodb';
 

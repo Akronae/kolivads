@@ -1,9 +1,9 @@
 import { Client } from '@/entities/Client';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ClientMongooseModel } from '../client/model';
-import ClientService from '../client/service';
-import { JwtSessionPayload } from './jwt.strategy';
+import { ClientMongooseModel } from '@/modules/client/model';
+import ClientService from '@/modules/client/service';
+import { JwtSessionPayload } from '@/modules/auth/jwt.strategy';
 
 export enum ValidationError {
   Success,

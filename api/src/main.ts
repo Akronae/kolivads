@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from '@/app.module';
 import mongooseBootstrapper from '@/bootstrap/mongoose';
 import * as chalk from 'chalk';
 import { config } from '@/config';
