@@ -1,8 +1,12 @@
-import { Property } from "@/entities/Property";
-import { PropertyCreateInput, PropertyFilterInput, PropertyUpdateInput } from "@/modules/property/input";
-import PropertyModel from "@/modules/property/model";
-import { ObjectId } from "mongodb";
-import { Service } from "typedi";
+import { Property } from '@/entities/Property';
+import {
+  PropertyCreateInput,
+  PropertyFilterInput,
+  PropertyUpdateInput,
+} from '@/modules/property/input';
+import PropertyModel from '@/modules/property/model';
+import { ObjectId } from 'mongodb';
+import { Service } from 'typedi';
 
 @Service()
 export default class PropertyService {
@@ -20,13 +24,16 @@ export default class PropertyService {
     const newProperties = [];
 
     for (const property of data) {
-      newProperties.push( await this.propertyModel.create(property));
+      newProperties.push(await this.propertyModel.create(property));
     }
 
     return newProperties;
   }
 
-  public async update(filter: PropertyFilterInput, update: PropertyUpdateInput): Promise<number> {
+  public async update(
+    filter: PropertyFilterInput,
+    update: PropertyUpdateInput,
+  ): Promise<number> {
     return await this.propertyModel.update(filter, update);
   }
 

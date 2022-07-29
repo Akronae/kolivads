@@ -1,7 +1,7 @@
-import { Address } from "@/entities/Address";
-import { prop } from "@typegoose/typegoose";
-import { Min } from "class-validator";
-import { Field, InputType } from "type-graphql";
+import { Address } from '@/entities/Address';
+import { prop } from '@typegoose/typegoose';
+import { Min } from 'class-validator';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class PropertyCreateInput {
@@ -18,7 +18,7 @@ export class PropertyCreateInput {
   @Field()
   title: string;
 
-  @Field(type => Address, )
+  @Field((_type) => Address)
   address: Address;
 
   @Field()
@@ -48,7 +48,7 @@ export class PropertyUpdateInput {
   @Field({ nullable: true })
   title?: string;
 
-  @Field(type => Address, { nullable: true })
+  @Field((_type) => Address, { nullable: true })
   address?: Address;
 
   @Field({ nullable: true })
@@ -67,15 +67,8 @@ export class PropertyUpdateInput {
 @InputType()
 export class PropertyFilterInput {
   @prop()
-  _id: number;
-
   @Field({ nullable: true })
-  get id (): number {
-    return this._id;
-  }
-  set id (value: number) {
-    this._id = value;
-  }
+  id?: number;
 
   @Field({ nullable: true })
   title: string;

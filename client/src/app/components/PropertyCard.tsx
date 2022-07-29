@@ -69,7 +69,7 @@ export function PropertyCard(p: Props) {
     ObjectUtils.clone(property),
   );
   const propState = useState(ObjectUtils.clone(property));
-  const reservedBy = useState<string | null>(null);
+  const reservedBy = useState<string>('');
   const newClient = useState<Client>({
     id: -1,
     email: '',
@@ -81,9 +81,9 @@ export function PropertyCard(p: Props) {
   const history = useHistory();
 
   const saveChanges = async () => {
-    newClient.state.email = reservedBy.state!;
+    newClient.state.email = reservedBy.state;
     propState.state.reservedBy =
-      getClients.data?.find(c => c.email === reservedBy.state)?.id || null;
+      getClients.data?.find(c => c.email === reservedBy.state)?.id || -1;
 
     if (newClient.state.email && !propState.state.reservedBy) {
       const { email, firstName, lastName, phone } = newClient.state;
@@ -156,7 +156,7 @@ export function PropertyCard(p: Props) {
   const reservedByFromProp = getClients.data?.find(
     c => c.id === propState.state.reservedBy,
   );
-  if (reservedBy.state == null) reservedBy.state = reservedByFromProp?.email!;
+  if (!reservedBy.state) reservedBy.state = reservedByFromProp?.email || '';
 
   return (
     <Card

@@ -1,8 +1,12 @@
-import { getModelForClass, Prop } from "@typegoose/typegoose";
-import { ObjectId } from "mongodb";
+import { getModelForClass } from '@typegoose/typegoose';
+import { ObjectId } from 'mongodb';
 
-import { Client } from "@/entities/Client";
-import { ClientCreateInput, ClientFilterInput, ClientUpdateInput } from "@/modules/client/input";
+import { Client } from '@/entities/Client';
+import {
+  ClientCreateInput,
+  ClientFilterInput,
+  ClientUpdateInput,
+} from '@/modules/client/input';
 
 export const ClientMongooseModel = getModelForClass(Client);
 
@@ -11,7 +15,7 @@ export default class ClientModel {
     return ClientMongooseModel.find(filter).lean().exec();
   }
 
-  async getById(_id: ObjectId): Promise<Client | null> {
+  async getById(_id: ObjectId | number): Promise<Client | null> {
     return ClientMongooseModel.findById(_id).lean().exec();
   }
 
@@ -19,14 +23,23 @@ export default class ClientModel {
     const Client = new ClientMongooseModel(data);
 
     const c = await Client.save();
-    return await this.getById(c._id) as Client;
+    return (await this.getById(c._id)) as Client;
   }
 
-  async update(filter: ClientFilterInput, update: ClientUpdateInput): Promise<number> {
-    return (await ClientMongooseModel.updateMany(filter, update).lean().exec()).n || 0;
+  async update(
+    filter: ClientFilterInput,
+    update: ClientUpdateInput,
+  ): Promise<number> {
+    return (
+      (await ClientMongooseModel.updateMany(filter, update).lean().exec())
+        .modifiedCount || 0
+    );
   }
 
   async delete(filter: ClientFilterInput): Promise<number> {
-    return (await ClientMongooseModel.deleteMany(filter).lean().exec()).n || 0;
+    return (
+      (await ClientMongooseModel.deleteMany(filter).lean().exec())
+        .deletedCount || 0
+    );
   }
 }

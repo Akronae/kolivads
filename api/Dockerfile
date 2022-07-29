@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:16
 WORKDIR /usr/app
 COPY package.json .
 RUN npm install --quiet --legacy-peer-deps

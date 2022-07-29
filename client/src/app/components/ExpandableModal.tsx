@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { Div } from './Div';
 import { ZIndex } from '@/styles/theme';
 import { CrossIcon } from '@/app/components/assets';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 export interface Props extends DefaultProps {
   topActions?: ReactNode;
@@ -46,10 +46,12 @@ export function ExpandableModal(p: Props) {
 
   var onElemClick: (() => void) | undefined = showModal;
 
-  if (expandInPlace) {
-    editModalToggled.state = true;
-    passedProps.className += ' expand-in-place';
-  }
+  useEffect(() => {
+    if (expandInPlace) {
+      editModalToggled.state = true;
+      passedProps.className += ' expand-in-place';
+    }
+  }, [editModalToggled, expandInPlace, passedProps]);
 
   if (editModalToggled.state) {
     passedProps.className += ' edit-modal-toggled';

@@ -29,6 +29,7 @@ export function ViewProperty() {
       .select(s => s.surface)
       .select(s => s.rentPerMonth)
       .select(s => s.landlord)
+      .select(s => s.reservedBy)
       .select(s => s.address!.city)
       .select(s => s.address!.street)
       .select(s => s.address!.zip)

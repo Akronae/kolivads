@@ -1,8 +1,12 @@
-import { Client } from "@/entities/Client";
-import { ClientCreateInput, ClientFilterInput, ClientUpdateInput } from "@/modules/client/input";
-import ClientModel from "@/modules/client/model";
-import { ObjectId } from "mongodb";
-import { Service } from "typedi";
+import { Client } from '@/entities/Client';
+import {
+  ClientCreateInput,
+  ClientFilterInput,
+  ClientUpdateInput,
+} from '@/modules/client/input';
+import ClientModel from '@/modules/client/model';
+import { ObjectId } from 'mongodb';
+import { Service } from 'typedi';
 
 @Service()
 export default class ClientService {
@@ -12,7 +16,7 @@ export default class ClientService {
     return this.clientModel.get(filter);
   }
 
-  public async getById(_id: ObjectId): Promise<Client | null> {
+  public async getById(_id: ObjectId | number): Promise<Client | null> {
     return this.clientModel.getById(_id);
   }
 
@@ -20,13 +24,16 @@ export default class ClientService {
     const newProperties = [];
 
     for (const client of data) {
-      newProperties.push( await this.clientModel.create(client));
+      newProperties.push(await this.clientModel.create(client));
     }
 
     return newProperties;
   }
 
-  public async update(filter: ClientFilterInput, update: ClientUpdateInput): Promise<number> {
+  public async update(
+    filter: ClientFilterInput,
+    update: ClientUpdateInput,
+  ): Promise<number> {
     return await this.clientModel.update(filter, update);
   }
 

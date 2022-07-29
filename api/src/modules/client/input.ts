@@ -1,7 +1,7 @@
-import { Address } from "@/entities/Address";
-import { prop } from "@typegoose/typegoose";
-import { IsEmail, IsPhoneNumber, Min } from "class-validator";
-import { Field, InputType } from "type-graphql";
+import { Address } from '@/entities/Address';
+import { prop } from '@typegoose/typegoose';
+import { IsEmail, IsPhoneNumber, Min } from 'class-validator';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class ClientCreateInput {
@@ -48,15 +48,8 @@ export class ClientUpdateInput {
 @InputType()
 export class ClientFilterInput {
   @prop()
-  _id: number;
-
   @Field({ nullable: true })
-  get id (): number {
-    return this._id;
-  }
-  set id (value: number) {
-    this._id = value;
-  }
+  id?: number;
 
   @prop()
   @Field({ nullable: true })

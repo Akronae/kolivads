@@ -1,8 +1,8 @@
-import { Address } from "@/entities/Address";
-import { AutoIncrementID } from "@typegoose/auto-increment";
-import { plugin, prop } from "@typegoose/typegoose";
-import { IsEmail, IsPhoneNumber } from "class-validator";
-import { Field, ObjectType } from "type-graphql";
+import { AutoIncrementID } from '@typegoose/auto-increment';
+import { prop } from '@typegoose/typegoose';
+import { IsEmail, IsPhoneNumber } from 'class-validator';
+import { plugin } from '@typegoose/typegoose';
+import { Field, ObjectType } from 'type-graphql';
 
 @plugin(AutoIncrementID)
 @ObjectType()

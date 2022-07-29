@@ -1,7 +1,7 @@
-import { Address } from "@/entities/Address";
-import { AutoIncrementID } from "@typegoose/auto-increment";
-import { plugin, prop } from "@typegoose/typegoose";
-import { Field, ObjectType } from "type-graphql";
+import { Address } from '@/entities/Address';
+import { AutoIncrementID } from '@typegoose/auto-increment';
+import { plugin, prop } from '@typegoose/typegoose';
+import { Field, ObjectType } from 'type-graphql';
 
 @plugin(AutoIncrementID)
 @ObjectType()
@@ -45,7 +45,7 @@ export class Property {
   title!: string;
 
   @prop()
-  @Field((type) => Address)
+  @Field((_type) => Address)
   address!: Address;
 
   @prop({ min: 1 })
@@ -61,8 +61,7 @@ export class Property {
     return this.reservedBy != undefined && this.reservedBy >= 0;
   }
   set isReserved(val: boolean) {
-    if (!val)
-      this.reservedBy = undefined;
+    if (!val) this.reservedBy = undefined;
   }
 
   @prop()
