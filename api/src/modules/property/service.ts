@@ -6,9 +6,9 @@ import {
 } from '@/modules/property/input';
 import PropertyModel from '@/modules/property/model';
 import { ObjectId } from 'mongodb';
-import { Service } from 'typedi';
+import { Injectable } from '@nestjs/common';
 
-@Service()
+@Injectable()
 export default class PropertyService {
   constructor(private readonly propertyModel: PropertyModel) {}
 

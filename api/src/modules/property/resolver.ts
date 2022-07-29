@@ -6,9 +6,9 @@ import {
 } from '@/modules/property/input';
 import PropertyService from '@/modules/property/service';
 import { Arg, Mutation, Query, Resolver } from 'type-graphql';
-import { Service } from 'typedi';
+import { Injectable } from '@nestjs/common';
 
-@Service()
+@Injectable()
 @Resolver((of) => Property)
 export default class PropertyResolver {
   constructor(private readonly propertyService: PropertyService) {}

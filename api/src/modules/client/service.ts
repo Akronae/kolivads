@@ -6,9 +6,9 @@ import {
 } from '@/modules/client/input';
 import ClientModel from '@/modules/client/model';
 import { ObjectId } from 'mongodb';
-import { Service } from 'typedi';
+import { Injectable } from '@nestjs/common';
 
-@Service()
+@Injectable()
 export default class ClientService {
   constructor(private readonly clientModel: ClientModel) {}
 

@@ -6,9 +6,9 @@ import {
 } from '@/modules/client/input';
 import ClientService from '@/modules/client/service';
 import { Arg, Mutation, Query, Resolver } from 'type-graphql';
-import { Service } from 'typedi';
+import { Injectable } from '@nestjs/common';
 
-@Service()
+@Injectable()
 @Resolver((_of) => Client)
 export default class ClientResolver {
   constructor(private readonly clientService: ClientService) {}
