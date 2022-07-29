@@ -67,8 +67,16 @@ export class PropertyUpdateInput {
 @InputType()
 export class PropertyFilterInput {
   @prop()
+  _id?: number;
+
+  @prop()
   @Field({ nullable: true })
-  id?: number;
+  get id(): number | undefined {
+    return this._id;
+  }
+  set id(value: number | undefined) {
+    this._id = value;
+  }
 
   @Field({ nullable: true })
   title: string;

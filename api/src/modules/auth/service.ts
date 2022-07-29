@@ -22,7 +22,7 @@ export default class AuthService {
     email: string,
     password: string,
   ): Promise<ValidationError | Client> {
-    let user = (await this.clientService.get({ email }))?.[0];
+    let user = (await this.clientService.get({ email, id: undefined }))?.[0];
     user = ClientMongooseModel.hydrate(user);
 
     // TODO: use actual user password
